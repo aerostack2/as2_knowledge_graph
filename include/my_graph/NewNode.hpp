@@ -8,6 +8,12 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "knowledge_graph/knowledge_graph.hpp"
+#include "knowledge_graph_msgs/msg/content.hpp"
+#include "knowledge_graph_msgs/msg/edge.hpp"
+#include "knowledge_graph_msgs/msg/graph.hpp"
+#include "knowledge_graph_msgs/msg/graph_update.hpp"
+#include "knowledge_graph_msgs/msg/node.hpp"
+#include "knowledge_graph_msgs/msg/property.hpp"
 #include "my_graph/srv/create_node.hpp"
 #include "my_graph/srv/create_edge.hpp"
 #include "my_graph/srv/remove_node.hpp"
@@ -18,20 +24,33 @@ using namespace std::chrono_literals;
 using std::placeholders::_1;
 using std::placeholders::_2;
 
-struct MyNode{
-std::string node_name;
-std::string node_class;
+// struct MyNode{
+// std::string node_name;
+// std::string node_class;
 
+// };
+
+// struct MyEdge{
+//   std::string edge_class;
+//   std::string source_node;
+//   std::string target_node;
+
+// };
+
+struct Corners{
+  std::vector<knowledge_graph_msgs::msg::Property> up_left_corner;
+  std::vector<knowledge_graph_msgs::msg::Property> up_righ_corner;
+  std::vector<knowledge_graph_msgs::msg::Property> down_left_corner;
+  std::vector<knowledge_graph_msgs::msg::Property> down_right_corner;
 };
 
-struct MyEdge{
-  std::string edge_class;
-  std::string source_node;
-  std::string target_node;
 
+
+struct PanelPose{
+  knowledge_graph_msgs::msg::Property x_pose;
+  knowledge_graph_msgs::msg::Property y_pose;
+  knowledge_graph_msgs::msg::Property z_pose;
 };
-
-
 class NewNode : public rclcpp::Node {
 public:
   NewNode() : rclcpp::Node("my_knowledgeg_graph"){
@@ -53,8 +72,13 @@ private:
     rclcpp::Service<my_graph::srv::CreateEdge>::SharedPtr service_create_edge;
     rclcpp::Service<my_graph::srv::RemoveNode>::SharedPtr service_remove_node;
     rclcpp::Service<my_graph::srv::RemoveEdge>::SharedPtr service_remove_edge;
-    MyNode my_node_;
-    MyEdge my_edge_;
+    // MyNode my_node_;
+    //MyEdge my_edge;
+    knowledge_graph_msgs::msg::Node my_node_;
+    knowledge_graph_msgs::msg::Edge my_edge_;
+    Corners my_corners;
+    PanelPose my_panel_pose;
+    
     bool request_name_received;   
     bool request_edge_received; 
     bool request_remove_node_received;   
@@ -102,6 +126,8 @@ void NewNode::timerCallback(){
 void NewNode::addInfoNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request,const std::shared_ptr<my_graph::srv::CreateNode::Response> response ){
     my_node_.node_name = request->node_name;
     my_node_.node_class = request->node_class;
+    my_node_.properties = request->properties;
+    
     request_name_received=true;
     response->resultado=request_name_received;
     RCLCPP_INFO(this->get_logger(),"successfullly received node");
@@ -113,6 +139,7 @@ void NewNode::createNode(){
     RCLCPP_INFO(this->get_logger(),"successfully built node");
     node_.node_name = std::string(my_node_.node_name);
     node_.node_class = std::string(my_node_.node_class);
+    node_.properties = my_node_.properties;
     if(this->graph_->update_node(node_,1)==true){
     RCLCPP_INFO(this->get_logger()," successfully update"); 
     };
@@ -130,6 +157,7 @@ void NewNode::addInfoEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Reque
   my_edge_.edge_class = request->edge_class;
   my_edge_.source_node = request->source_node;
   my_edge_.target_node = request->target_node;
+  my_edge_.properties = request->properties;
   request_edge_received=true;
   response->resultado=request_edge_received;
   RCLCPP_INFO(this->get_logger(),"successfullly received edge");
@@ -138,7 +166,8 @@ void NewNode::addInfoEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Reque
 void NewNode::createEdge(){
   edge_.edge_class = std::string(my_edge_.edge_class);
   edge_.source_node = std::string(my_edge_.source_node);
-  edge_.target_node= std::string(my_edge_.target_node);
+  edge_.target_node = std::string(my_edge_.target_node);
+  edge_.properties = my_edge_.properties;
 
   if(this->graph_->update_edge(edge_,1)==true){
     RCLCPP_INFO(this->get_logger()," Edge Class: %s, Source Node: %s, Target Node: %s ", edge_.edge_class.c_str(), edge_.source_node.c_str(), edge_.target_node.c_str());

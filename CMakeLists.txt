@@ -13,6 +13,7 @@ set (PROJECT_DEPENDENCIES
   rclcpp
   backward_ros
   knowledge_graph
+  knowledge_graph_msgs
   rosidl_default_generators
 )
 
@@ -29,7 +30,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   srv/CreateNode.srv
   srv/CreateEdge.srv
   srv/RemoveNode.srv
-  srv/RemoveEdge.srv
+  srv/RemoveEdge.srv 
+  DEPENDENCIES knowledge_graph_msgs
 )
 
 rosidl_get_typesupport_target(cpp_typesupport_target
