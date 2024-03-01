@@ -1,3 +1,4 @@
 string node_name
 string node_class
 ---
+bool resultado

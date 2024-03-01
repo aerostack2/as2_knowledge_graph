@@ -45,9 +45,19 @@ add_executable(new_edge_server src/new_node_server.cpp)
 ament_target_dependencies(new_edge_server ${PROJECT_DEPENDENCIES})
 target_link_libraries(new_edge_server "${cpp_typesupport_target}")
 
+add_executable(remove_node_server src/remove_node_server.cpp)
+ament_target_dependencies(remove_node_server ${PROJECT_DEPENDENCIES})
+target_link_libraries(remove_node_server "${cpp_typesupport_target}")
+
+add_executable(remove_edge_server src/remove_edge_server.cpp)
+ament_target_dependencies(remove_edge_server ${PROJECT_DEPENDENCIES})
+target_link_libraries(remove_edge_server "${cpp_typesupport_target}")
+
 install(  TARGETS 
   new_node_server
   new_edge_server
+  remove_node_server
+  remove_edge_server
   DESTINATION lib/${PROJECT_NAME}
   )
 

@@ -38,9 +38,8 @@ public:
     service_create_node=this->create_service<my_graph::srv::CreateNode>("create_node", std::bind(&NewNode::addInfoNode, this, _1,_2));
     service_create_edge=this->create_service<my_graph::srv::CreateEdge>("create_edge", std::bind(&NewNode::addInfoEdge, this, _1,_2));
 
-    //En realidad no estoy segura si tengo que crear dos nuevos .srv para eliminarlos o puedo reutilizar los ya existentes
-    // service_remove_node=this->remove_service<my_graph::srv::RemoveNode>("remove_node", std::bind(&NewNode::addInfoNode, this, _1,_2));
-    // service_remove_edge=this->remove_service<my_graph::srv::RemoveEdge>("remove_edge", std::bind(&NewNode::addInfoEdge, this, _1,_2));
+    service_remove_node=this->create_service<my_graph::srv::RemoveNode>("remove_node", std::bind(&NewNode::removeInfoNode, this, _1,_2));
+    service_remove_edge=this->create_service<my_graph::srv::RemoveEdge>("remove_edge", std::bind(&NewNode::removeInfoEdge, this, _1,_2));
     
     timer_ = this->create_wall_timer(20ms, std::bind(&NewNode::timerCallback, this));
   }
@@ -58,15 +57,23 @@ private:
     MyEdge my_edge_;
     bool request_name_received;   
     bool request_edge_received; 
+    bool request_remove_node_received;   
+    bool request_remove_edge_received; 
     size_t count_;  
   
     void addInfoNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request ,const std::shared_ptr<my_graph::srv::CreateNode::Response> response );
     void addInfoEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Request> request,const std::shared_ptr<my_graph::srv::CreateEdge::Response> response );
+ 
+    void removeInfoNode(const std::shared_ptr<my_graph::srv::RemoveNode::Request> request ,const std::shared_ptr<my_graph::srv::RemoveNode::Response> response );
+    void removeInfoEdge(const std::shared_ptr<my_graph::srv::RemoveEdge::Request> request,const std::shared_ptr<my_graph::srv::RemoveEdge::Response> response );
     void createNode();
     void createEdge();
     void getEdge();
     void getOutEdge();
     void getInEdge();
+    void exitNode();
+    void removeNode();
+    void removeEdge();
     void timerCallback();
 };
 
@@ -82,7 +89,14 @@ void NewNode::timerCallback(){
     getInEdge();
     request_edge_received=false;
   };
-
+  if(request_remove_node_received){
+    removeNode();
+    request_remove_node_received=false;
+  };
+  if(request_remove_edge_received){
+    removeEdge();
+    request_remove_edge_received=false;
+  };
 };
 
 void NewNode::addInfoNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request,const std::shared_ptr<my_graph::srv::CreateNode::Response> response ){
@@ -103,6 +117,13 @@ void NewNode::createNode(){
     RCLCPP_INFO(this->get_logger()," successfully update"); 
     };
   RCLCPP_INFO(this->get_logger()," Node Name: %s, Node Class: %s",node_.node_name.c_str(), node_.node_class.c_str());
+};
+
+void NewNode::exitNode(){
+
+      if(this->graph_->exist_node( node_.node_name)==true){
+    RCLCPP_INFO(this->get_logger()," node exist"); 
+   }; 
 };
 
 void NewNode::addInfoEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Request> request,const std::shared_ptr<my_graph::srv::CreateEdge::Response> response){
@@ -138,6 +159,33 @@ this->graph_->get_out_edges(edge_.source_node);
 
 void NewNode::getInEdge(){
 this->graph_->get_out_edges(edge_.target_node);
+};
+
+void NewNode::removeInfoNode(const std::shared_ptr<my_graph::srv::RemoveNode::Request> request ,const std::shared_ptr<my_graph::srv::RemoveNode::Response> response ){
+    my_node_.node_name = request->node_name;
+    my_node_.node_class = request->node_class;
+    request_remove_node_received=true;
+    response->resultado=request_remove_node_received;
+};
+
+void NewNode::removeInfoEdge(const std::shared_ptr<my_graph::srv::RemoveEdge::Request> request,const std::shared_ptr<my_graph::srv::RemoveEdge::Response> response ){
+  my_edge_.edge_class = request->edge_class;
+  my_edge_.source_node = request->source_node;
+  my_edge_.target_node = request->target_node;
+  request_remove_edge_received=true;
+  response->resultado=request_remove_edge_received;
+};
+
+void NewNode::removeNode(){
+  if(this->graph_->remove_node( node_.node_name)==true){
+    RCLCPP_INFO(this->get_logger()," successfully remove %s",node_.node_name.c_str());
+  }
+};
+
+void NewNode::removeEdge(){
+  if(this->graph_->remove_edge(edge_,1)==true){
+    RCLCPP_INFO(this->get_logger(),"%s, %s, %s ", edge_.edge_class.c_str(), edge_.source_node.c_str(), edge_.target_node.c_str());
+  }
 };
 
 #endif
