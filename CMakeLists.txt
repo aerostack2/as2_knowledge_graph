@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 set(PROJECT_NAME my_graph)
 project(${PROJECT_NAME})
 
-set(CMAKE_BUILD_TYPE RelWithDebInfo)
+set(CMAKE_BUILD_TYPE Debug)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -43,6 +43,10 @@ add_executable(new_node_server src/new_node_server.cpp)
 ament_target_dependencies(new_node_server ${PROJECT_DEPENDENCIES})
 target_link_libraries(new_node_server "${cpp_typesupport_target}")
 
+add_executable(new_node_client src/new_node_client.cpp)
+ament_target_dependencies(new_node_client ${PROJECT_DEPENDENCIES})
+target_link_libraries(new_node_client "${cpp_typesupport_target}")
+
 add_executable(new_edge_server src/new_node_server.cpp)
 ament_target_dependencies(new_edge_server ${PROJECT_DEPENDENCIES})
 target_link_libraries(new_edge_server "${cpp_typesupport_target}")
@@ -57,6 +61,7 @@ target_link_libraries(remove_edge_server "${cpp_typesupport_target}")
 
 install(  TARGETS 
   new_node_server
+  new_node_client
   new_edge_server
   remove_node_server
   remove_edge_server

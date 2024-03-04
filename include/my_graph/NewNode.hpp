@@ -53,7 +53,7 @@ struct PanelPose{
 };
 class NewNode : public rclcpp::Node {
 public:
-  NewNode() : rclcpp::Node("my_knowledgeg_graph"){
+  NewNode() : rclcpp::Node("my_knowledge_graph"){
     service_create_node=this->create_service<my_graph::srv::CreateNode>("create_node", std::bind(&NewNode::addInfoNode, this, _1,_2));
     service_create_edge=this->create_service<my_graph::srv::CreateEdge>("create_edge", std::bind(&NewNode::addInfoEdge, this, _1,_2));
 
@@ -124,9 +124,18 @@ void NewNode::timerCallback(){
 };
 
 void NewNode::addInfoNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request,const std::shared_ptr<my_graph::srv::CreateNode::Response> response ){
-    my_node_.node_name = request->node_name;
+    my_node_.node_name = (request->node_name="nodo1");
     my_node_.node_class = request->node_class;
-    my_node_.properties = request->properties;
+    my_node_.properties.clear();
+    for (int i =0 ;i<3;i++){
+      knowledge_graph_msgs::msg::Property prop;
+      prop.key= std::string("prop") + std::to_string(i);
+      prop.value.type = knowledge_graph_msgs::msg::Content::INT;
+      prop.value.int_value= i;
+      my_node_.properties.push_back(prop);
+    }
+    
+    request->properties=my_node_.properties;
     
     request_name_received=true;
     response->resultado=request_name_received;
@@ -144,6 +153,7 @@ void NewNode::createNode(){
     RCLCPP_INFO(this->get_logger()," successfully update"); 
     };
   RCLCPP_INFO(this->get_logger()," Node Name: %s, Node Class: %s",node_.node_name.c_str(), node_.node_class.c_str());
+  RCLCPP_INFO(this->get_logger(),"properties: %d, %d, %d",node_.properties.at(0).value.int_value,node_.properties.at(1).value.int_value,node_.properties.at(2).value.int_value);
 };
 
 void NewNode::exitNode(){
