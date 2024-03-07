@@ -29,8 +29,6 @@ include_directories(
 rosidl_generate_interfaces(${PROJECT_NAME}
   srv/CreateNode.srv
   srv/CreateEdge.srv
-  srv/RemoveNode.srv
-  srv/RemoveEdge.srv 
   DEPENDENCIES knowledge_graph_msgs
 )
 
@@ -39,32 +37,20 @@ rosidl_get_typesupport_target(cpp_typesupport_target
 
 ament_export_dependencies(rosidl_default_runtime)
 
-add_executable(new_node_server src/new_node_server.cpp)
-ament_target_dependencies(new_node_server ${PROJECT_DEPENDENCIES})
-target_link_libraries(new_node_server "${cpp_typesupport_target}")
+add_executable(new_server src/new_server.cpp)
+ament_target_dependencies(new_server ${PROJECT_DEPENDENCIES})
+target_link_libraries(new_server "${cpp_typesupport_target}")
 
-add_executable(new_node_client src/new_node_client.cpp)
-ament_target_dependencies(new_node_client ${PROJECT_DEPENDENCIES})
-target_link_libraries(new_node_client "${cpp_typesupport_target}")
+add_executable(new_client src/new_client.cpp)
+ament_target_dependencies(new_client ${PROJECT_DEPENDENCIES})
+target_link_libraries(new_client "${cpp_typesupport_target}")
 
-add_executable(new_edge_server src/new_node_server.cpp)
-ament_target_dependencies(new_edge_server ${PROJECT_DEPENDENCIES})
-target_link_libraries(new_edge_server "${cpp_typesupport_target}")
 
-add_executable(remove_node_server src/remove_node_server.cpp)
-ament_target_dependencies(remove_node_server ${PROJECT_DEPENDENCIES})
-target_link_libraries(remove_node_server "${cpp_typesupport_target}")
-
-add_executable(remove_edge_server src/remove_edge_server.cpp)
-ament_target_dependencies(remove_edge_server ${PROJECT_DEPENDENCIES})
-target_link_libraries(remove_edge_server "${cpp_typesupport_target}")
 
 install(  TARGETS 
-  new_node_server
-  new_node_client
-  new_edge_server
-  remove_node_server
-  remove_edge_server
+  new_server
+  new_client
+
   DESTINATION lib/${PROJECT_NAME}
   )
 
