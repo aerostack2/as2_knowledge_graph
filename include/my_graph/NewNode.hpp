@@ -8,6 +8,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "knowledge_graph/knowledge_graph.hpp"
+#include "knowledge_graph/graph_utils.hpp"
 #include "knowledge_graph_msgs/msg/content.hpp"
 #include "knowledge_graph_msgs/msg/edge.hpp"
 #include "knowledge_graph_msgs/msg/graph.hpp"
@@ -16,6 +17,7 @@
 #include "knowledge_graph_msgs/msg/property.hpp"
 #include "my_graph/srv/create_node.hpp"
 #include "my_graph/srv/create_edge.hpp"
+#include "my_graph/srv/add_property.hpp"
 
 
 
@@ -26,11 +28,13 @@ using std::placeholders::_2;
 class NewNode : public rclcpp::Node {
 public:
   NewNode() : rclcpp::Node("my_knowledge_graph"){
-    service_create_node=this->create_service<my_graph::srv::CreateNode>("create_node", std::bind(&NewNode::createNode, this, _1,_2));
-    service_create_edge=this->create_service<my_graph::srv::CreateEdge>("create_edge", std::bind(&NewNode::createEdge, this, _1,_2));
+    service_create_node_=this->create_service<my_graph::srv::CreateNode>("create_node", std::bind(&NewNode::createNode, this, _1,_2));
+    service_create_edge_=this->create_service<my_graph::srv::CreateEdge>("create_edge", std::bind(&NewNode::createEdge, this, _1,_2));
 
-    service_remove_node=this->create_service<my_graph::srv::CreateNode>("remove_node", std::bind(&NewNode::removeNode, this, _1,_2));
-    service_remove_edge=this->create_service<my_graph::srv::CreateEdge>("remove_edge", std::bind(&NewNode::removeEdge, this, _1,_2));
+    service_remove_node_=this->create_service<my_graph::srv::CreateNode>("remove_node", std::bind(&NewNode::removeNode, this, _1,_2));
+    service_remove_edge_=this->create_service<my_graph::srv::CreateEdge>("remove_edge", std::bind(&NewNode::removeEdge, this, _1,_2));
+
+    add_property_node_=this->create_service<my_graph::srv::CreateNode>("add_property_node", std::bind(&NewNode::addPropertyNode, this, _1,_2));
     
     timer_ = this->create_wall_timer(20ms, std::bind(&NewNode::timerCallback, this));
   }
@@ -38,10 +42,11 @@ public:
 private:
     std::shared_ptr<knowledge_graph::KnowledgeGraph> graph_;
     rclcpp::TimerBase::SharedPtr timer_; 
-    rclcpp::Service<my_graph::srv::CreateNode>::SharedPtr service_create_node;
-    rclcpp::Service<my_graph::srv::CreateEdge>::SharedPtr service_create_edge;
-    rclcpp::Service<my_graph::srv::CreateNode>::SharedPtr service_remove_node;
-    rclcpp::Service<my_graph::srv::CreateEdge>::SharedPtr service_remove_edge;
+    rclcpp::Service<my_graph::srv::CreateNode>::SharedPtr service_create_node_;
+    rclcpp::Service<my_graph::srv::CreateEdge>::SharedPtr service_create_edge_;
+    rclcpp::Service<my_graph::srv::CreateNode>::SharedPtr service_remove_node_;
+    rclcpp::Service<my_graph::srv::CreateEdge>::SharedPtr service_remove_edge_;
+    rclcpp::Service<my_graph::srv::CreateNode>::SharedPtr add_property_node_;
 
     
     bool request_name_received;   
@@ -54,6 +59,7 @@ private:
     void createEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Request> request,const std::shared_ptr<my_graph::srv::CreateEdge::Response> response );
     void removeNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request ,const std::shared_ptr<my_graph::srv::CreateNode::Response> response );
     void removeEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Request> request,const std::shared_ptr<my_graph::srv::CreateEdge::Response> response );
+    void addPropertyNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request ,const std::shared_ptr<my_graph::srv::CreateNode::Response> response );
     void timerCallback();
 };
 
@@ -118,5 +124,19 @@ void NewNode::removeEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Reques
     RCLCPP_INFO(this->get_logger(),"%s, %s, %s ", my_edge.edge_class.c_str(), my_edge.source_node.c_str(), my_edge.target_node.c_str());
   }
 };
+
+    
+  void NewNode::addPropertyNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request ,const std::shared_ptr<my_graph::srv::CreateNode::Response> response ){
+     knowledge_graph_msgs::msg::Node my_node;
+     my_node = request->node;
+    //  for (auto& property:my_node.properties){
+     for (size_t i=0; i< my_node.properties.size(); i++ ){
+      auto& property = my_node.properties[i];
+
+     if(knowledge_graph::add_property(my_node,property.key,property.value)==true){
+      response->resultado = 1;
+     }
+     }
+  };
 
 #endif

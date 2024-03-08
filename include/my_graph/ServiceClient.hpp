@@ -22,6 +22,7 @@ class ServiceClient : public rclcpp::Node{
             client_remove_node_=this->create_client<my_graph::srv::CreateNode>("remove_node");
             client_create_edge_=this->create_client<my_graph::srv::CreateEdge>("create_edge");
             client_remove_edge_=this->create_client<my_graph::srv::CreateEdge>("remove_edge");
+            client_add_property_node_=this->create_client<my_graph::srv::CreateNode>("add_property_node");
 
             timer_ = this->create_wall_timer(20ms, std::bind(&ServiceClient::timerCallback, this));
         }
@@ -32,13 +33,14 @@ class ServiceClient : public rclcpp::Node{
         rclcpp::Client<my_graph::srv::CreateNode>::SharedPtr client_remove_node_;
         rclcpp::Client<my_graph::srv::CreateEdge>::SharedPtr client_create_edge_;
         rclcpp::Client<my_graph::srv::CreateEdge>::SharedPtr client_remove_edge_;
-
+        rclcpp::Client<my_graph::srv::CreateNode>::SharedPtr client_add_property_node_;
         
          void timerCallback();
          void createNode();
          void createEdge();
          void removeNode();
          void removeEdge();
+         void addPropertyNode();
 
 
 
@@ -63,6 +65,12 @@ void ServiceClient::createEdge(){
     request->edge.target_node = my_edge.target_node;
     auto result = client_create_edge_->async_send_request(request);
 };
+void ServiceClient::removeNode(){};
 
+void ServiceClient::removeEdge(){};
+
+void ServiceClient::addPropertyNode(){
+
+};
 
 #endif
