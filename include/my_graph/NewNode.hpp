@@ -17,7 +17,6 @@
 #include "knowledge_graph_msgs/msg/property.hpp"
 #include "my_graph/srv/create_node.hpp"
 #include "my_graph/srv/create_edge.hpp"
-#include "my_graph/srv/add_property.hpp"
 
 
 
@@ -35,9 +34,10 @@ public:
     service_remove_edge_=this->create_service<my_graph::srv::CreateEdge>("remove_edge", std::bind(&NewNode::removeEdge, this, _1,_2));
 
     add_property_node_=this->create_service<my_graph::srv::CreateNode>("add_property_node", std::bind(&NewNode::addPropertyNode, this, _1,_2));
-    
+    add_property_edge_=this->create_service<my_graph::srv::CreateEdge>("add_property_edge", std::bind(&NewNode::addPropertyEdge, this, _1, _2));
+
     timer_ = this->create_wall_timer(20ms, std::bind(&NewNode::timerCallback, this));
-  }
+  } 
 
 private:
     std::shared_ptr<knowledge_graph::KnowledgeGraph> graph_;
@@ -47,6 +47,7 @@ private:
     rclcpp::Service<my_graph::srv::CreateNode>::SharedPtr service_remove_node_;
     rclcpp::Service<my_graph::srv::CreateEdge>::SharedPtr service_remove_edge_;
     rclcpp::Service<my_graph::srv::CreateNode>::SharedPtr add_property_node_;
+    rclcpp::Service<my_graph::srv::CreateEdge>::SharedPtr add_property_edge_;
 
     
     bool request_name_received;   
@@ -60,15 +61,16 @@ private:
     void removeNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request ,const std::shared_ptr<my_graph::srv::CreateNode::Response> response );
     void removeEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Request> request,const std::shared_ptr<my_graph::srv::CreateEdge::Response> response );
     void addPropertyNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request ,const std::shared_ptr<my_graph::srv::CreateNode::Response> response );
+    void addPropertyEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Request> request,const std::shared_ptr<my_graph::srv::CreateEdge::Response> response );
     void timerCallback();
 };
 
 void NewNode::timerCallback(){
-
+ 
 };
 
 void NewNode::createNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request,const std::shared_ptr<my_graph::srv::CreateNode::Response> response ){
-    
+    RCLCPP_INFO(this->get_logger(),"service create node");
     knowledge_graph_msgs::msg::Node my_node;
     request_name_received=true;
     my_node.node_name = request->node.node_name;
@@ -137,6 +139,18 @@ void NewNode::removeEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Reques
       response->resultado = 1;
      }
      }
+    RCLCPP_INFO(this->get_logger(),"Node property service");
   };
 
+  void NewNode::addPropertyEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Request> request ,const std::shared_ptr<my_graph::srv::CreateEdge::Response> response ){
+  //   //  knowledge_graph_msgs::msg::Edge my_edge;
+  //   //  my_edge = request->edge;
+  //   // for (auto& property:my_edge.properties){
+  //   //  if(knowledge_graph::add_property(my_edge,property.key,property.value)==true){
+  //   //   response->resultado = 1;
+  //   //  }
+  //   //  }
+  //   // RCLCPP_INFO(this->get_logger(),"Edge property service");
+  };
+  
 #endif
