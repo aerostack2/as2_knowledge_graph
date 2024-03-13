@@ -8,6 +8,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+#Find dependencies
 set (PROJECT_DEPENDENCIES
   ament_cmake
   rclcpp
@@ -15,51 +16,104 @@ set (PROJECT_DEPENDENCIES
   knowledge_graph
   knowledge_graph_msgs
   rosidl_default_generators
+  ament_cmake_gtest
 )
+set(SUBPROJECT_NAME
+      new_client_main
+      new_server_main
+      )
+
+
 
 foreach(DEPENDENCY ${PROJECT_DEPENDENCIES})
   find_package(${DEPENDENCY} REQUIRED)
 endforeach()
 
+#Include directories
 include_directories(
+  include
   include/${PROJECT_NAME}
+  include/${SUBPROJECT_NAME}
   
 )
 
-rosidl_generate_interfaces(${PROJECT_NAME}
+set(SOURCE_CPP_FILES
+    src/${SUBPROJECT_NAME}.cpp 
+    )
+
+rosidl_generate_interfaces(${PROJECT_NAME}_msgs
   srv/CreateNode.srv
   srv/CreateEdge.srv
   DEPENDENCIES knowledge_graph_msgs
 )
 
 rosidl_get_typesupport_target(cpp_typesupport_target
-  ${PROJECT_NAME} rosidl_typesupport_cpp)
+  ${PROJECT_NAME}_msgs rosidl_typesupport_cpp)
 
 ament_export_dependencies(rosidl_default_runtime)
 
-add_executable(new_server src/new_server.cpp)
-ament_target_dependencies(new_server ${PROJECT_DEPENDENCIES})
-target_link_libraries(new_server "${cpp_typesupport_target}")
+# Library
+add_library(${PROJECT_NAME} SHARED src/service_client.cpp src/new_node.cpp)
+# add_library(${PROJECT_NAME} SHARED src/new_node.cpp)
+# Include headers in the library
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+ament_target_dependencies(${PROJECT_NAME} ${PROJECT_DEPENDENCIES})
+target_link_libraries(${PROJECT_NAME} "${cpp_typesupport_target}")
 
-add_executable(new_client src/new_client.cpp)
-ament_target_dependencies(new_client ${PROJECT_DEPENDENCIES})
-target_link_libraries(new_client "${cpp_typesupport_target}")
 
 
+add_executable(new_server_main src/new_server_main.cpp)
+ament_target_dependencies(new_server_main ${PROJECT_DEPENDENCIES})
+target_link_libraries(new_server_main  ${PROJECT_NAME} "${cpp_typesupport_target}")
+
+add_executable(new_client_main src/new_client_main.cpp)
+ament_target_dependencies(new_client_main  ${PROJECT_DEPENDENCIES})
+target_link_libraries(new_client_main ${PROJECT_NAME} "${cpp_typesupport_target}")
+
+
+
+#Install
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
 
 install(  TARGETS 
-  new_server
-  new_client
-
+  ${SUBPROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
   )
 
+ament_export_include_directories(
+  include
+)
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  set(ament_cmake_copyright_FOUND TRUE)
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+ament_export_libraries(
+  ${PROJECT_NAME}
+)
+
+ament_export_targets(
+  export_${PROJECT_NAME}
+)
+
+
+install(
+  TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
+  ARCHIVE DESTINATION lib 
+  LIBRARY DESTINATION lib 
+  RUNTIME DESTINATION bin
+)
+
+
+# if(BUILD_TESTING)
+#   find_package(ament_lint_auto REQUIRED)
+#   set(ament_cmake_copyright_FOUND TRUE)
+#   set(ament_cmake_cpplint_FOUND TRUE)
+#   ament_lint_auto_find_test_dependencies()
+#   add_subdirectory(tests)
+# endif()
 
 ament_package()
