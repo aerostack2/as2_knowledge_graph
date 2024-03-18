@@ -1,21 +1,40 @@
 #include "service_client.hpp"
 
+
 void ServiceClient::timerCallback(){
 };
 
-void ServiceClient::createNode(){
-    knowledge_graph_msgs::msg::Node my_node;
-    auto request = std::make_shared<my_graph::srv::CreateNode::Request>();
-    request->node.node_name = my_node.node_name;
-    request->node.node_class = my_node.node_class;
-    auto result = client_create_node_->async_send_request(request);
+void ServiceClient::createNode(const knowledge_graph_msgs::msg::Node &client_){
+    RCLCPP_INFO(this->get_logger(),"Setting node name");
+    //New node SynchronousServiceClient object
+    // as2::Node *node;
+    auto set_cli = as2::SynchronousServiceClient<as2_knowledge_graph_msgs::srv::CreateNode>("create_node", this);
+    //Set request
+    auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Request>();
+    auto response = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Response>();
+    request->node.node_name = client_.node_name;
+    request->node.node_class = client_.node_class;
+    
+    bool out = set_cli.sendRequest(request, response);
+    if(out && response){
+       RCLCPP_INFO(this->get_logger(), " Create:\n Node Name: %s\n, Node Class: %s\n",request->node.node_name.c_str(), request->node.node_class.c_str()); 
+    }else{
+        RCLCPP_INFO(this->get_logger(),"it was not able to creted de node");
+    }
+    //knowledge_graph_msgs::msg::Node my_node;
+    // auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Request>();
+    // request->node.node_name = request_n.node.node_name;
+    // request->node.node_name = request_n.node.node_name;
+    // request->node.node_name = my_node.node_name;
+    // request->node.node_class = my_node.node_class;
+    //auto result = client_create_node_->async_send_request(request);
 
-    RCLCPP_INFO(this->get_logger(), " Create:\n Node Name: %s\n, Node Class: %s\n",request->node.node_name.c_str(), request->node.node_class.c_str());
+    //RCLCPP_INFO(this->get_logger(), " Create:\n Node Name: %s\n, Node Class: %s\n",request->node.node_name.c_str(), request->node.node_class.c_str());
 };
 
 void ServiceClient::createEdge(){
     knowledge_graph_msgs::msg::Edge my_edge;
-    auto request = std::make_shared<my_graph::srv::CreateEdge::Request>();
+    auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateEdge::Request>();
     request->edge.edge_class = my_edge.edge_class ;
     request->edge.source_node = my_edge.source_node;
     request->edge.target_node = my_edge.target_node;
@@ -24,7 +43,7 @@ void ServiceClient::createEdge(){
 };
 void ServiceClient::removeNode(){
     knowledge_graph_msgs::msg::Node my_node;
-    auto request = std::make_shared<my_graph::srv::CreateNode::Request>();
+    auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Request>();
     request->node.node_name = my_node.node_name;
     request->node.node_class = my_node.node_class;
     auto result = client_remove_node_->async_send_request(request);
@@ -34,7 +53,7 @@ void ServiceClient::removeNode(){
 
 void ServiceClient::removeEdge(){
     knowledge_graph_msgs::msg::Edge my_edge;
-    auto request = std::make_shared<my_graph::srv::CreateEdge::Request>();
+    auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateEdge::Request>();
     request->edge.edge_class = my_edge.edge_class ;
     request->edge.source_node = my_edge.source_node;
     request->edge.target_node = my_edge.target_node;
@@ -43,7 +62,7 @@ void ServiceClient::removeEdge(){
 };
 
 void ServiceClient::addPropertyNode(){
-    auto request = std::make_shared<my_graph::srv::CreateNode::Request>();
+    auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Request>();
     auto result = client_add_property_node_->async_send_request(request);
     for(size_t i=0; i<request->node.properties.size(); i++){
        RCLCPP_INFO(this->get_logger(),"Add property: %d",request->node.properties.at(i).value.int_value); 
@@ -51,7 +70,7 @@ void ServiceClient::addPropertyNode(){
 };
 
 void ServiceClient::addPropertyEdge(){
-    auto request = std::make_shared<my_graph::srv::CreateEdge::Request>();
+    auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateEdge::Request>();
     auto result = client_add_property_edge_->async_send_request(request);
     for(size_t i=0; i<request->edge.properties.size(); i++){
        RCLCPP_INFO(this->get_logger(),"Add property: %d",request->edge.properties.at(i).value.int_value); 

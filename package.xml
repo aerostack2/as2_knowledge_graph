@@ -15,7 +15,9 @@
   <depend>rclcpp</depend>
   <depend>knowledge_graph</depend>
   <depend>knowledge_graph_msgs</depend>
+  <depend>as2_knowledge_graph_msgs</depend>
   <depend>backward_ros</depend>
+  <depend>as2_core</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

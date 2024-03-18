@@ -17,7 +17,10 @@ set (PROJECT_DEPENDENCIES
   knowledge_graph_msgs
   rosidl_default_generators
   ament_cmake_gtest
+  as2_core
+  as2_knowledge_graph_msgs
 )
+
 set(SUBPROJECT_NAME
       new_client_main
       new_server_main
@@ -41,37 +44,35 @@ set(SOURCE_CPP_FILES
     src/${SUBPROJECT_NAME}.cpp 
     )
 
-rosidl_generate_interfaces(${PROJECT_NAME}_msgs
-  srv/CreateNode.srv
-  srv/CreateEdge.srv
-  DEPENDENCIES knowledge_graph_msgs
-)
+# rosidl_generate_interfaces(${PROJECT_NAME}_msgs
+#   srv/CreateNode.srv
+#   srv/CreateEdge.srv
+#   DEPENDENCIES knowledge_graph_msgs
+# )
 
-rosidl_get_typesupport_target(cpp_typesupport_target
-  ${PROJECT_NAME}_msgs rosidl_typesupport_cpp)
+# rosidl_get_typesupport_target(cpp_typesupport_target
+#   ${PROJECT_NAME}_msgs rosidl_typesupport_cpp)
 
 ament_export_dependencies(rosidl_default_runtime)
 
 # Library
 add_library(${PROJECT_NAME} SHARED src/service_client.cpp src/new_node.cpp)
-# add_library(${PROJECT_NAME} SHARED src/new_node.cpp)
 # Include headers in the library
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
 ament_target_dependencies(${PROJECT_NAME} ${PROJECT_DEPENDENCIES})
-target_link_libraries(${PROJECT_NAME} "${cpp_typesupport_target}")
 
 
 
 add_executable(new_server_main src/new_server_main.cpp)
 ament_target_dependencies(new_server_main ${PROJECT_DEPENDENCIES})
-target_link_libraries(new_server_main  ${PROJECT_NAME} "${cpp_typesupport_target}")
+target_link_libraries(new_server_main  ${PROJECT_NAME} )
 
 add_executable(new_client_main src/new_client_main.cpp)
 ament_target_dependencies(new_client_main  ${PROJECT_DEPENDENCIES})
-target_link_libraries(new_client_main ${PROJECT_NAME} "${cpp_typesupport_target}")
+target_link_libraries(new_client_main ${PROJECT_NAME} )
 
 
 
@@ -108,12 +109,12 @@ install(
 )
 
 
-# if(BUILD_TESTING)
-#   find_package(ament_lint_auto REQUIRED)
-#   set(ament_cmake_copyright_FOUND TRUE)
-#   set(ament_cmake_cpplint_FOUND TRUE)
-#   ament_lint_auto_find_test_dependencies()
-#   add_subdirectory(tests)
-# endif()
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  set(ament_cmake_copyright_FOUND TRUE)
+  set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+  add_subdirectory(tests)
+endif()
 
 ament_package()

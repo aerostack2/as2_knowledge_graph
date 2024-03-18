@@ -16,7 +16,8 @@ foreach(TEST_FILE ${TEST_SOURCE})
     get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
 
     #Add Gtest executable and link necessary dependencies
-    ament_add_gtest(${PROJECT_NAME}_${TEST_NAME} ${TEST_FILE})
-    target_link_libraries(${PROJECT_NAME}_${TEST_NAME} ${PROJECT_NAME}_lib)
+    ament_add_gtest(${TEST_NAME} ${TEST_SOURCE})
+    ament_target_dependencies(${TEST_NAME} ${PROJECT_DEPENDENCIES})
+    target_link_libraries(${TEST_NAME} gtest_main ${PROJECT_NAME} )
 endforeach()
 

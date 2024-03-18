@@ -4,7 +4,7 @@ void NewNode::timerCallback(){
  
 };
 
-void NewNode::createNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request,const std::shared_ptr<my_graph::srv::CreateNode::Response> response ){
+void NewNode::createNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Request> request,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Response> response ){
     RCLCPP_INFO(this->get_logger(),"service create node");
     knowledge_graph_msgs::msg::Node my_node;
     request_name_received=true;
@@ -22,7 +22,7 @@ void NewNode::createNode(const std::shared_ptr<my_graph::srv::CreateNode::Reques
     };
 };
 
-void NewNode::createEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Request> request,const std::shared_ptr<my_graph::srv::CreateEdge::Response> response){
+void NewNode::createEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Request> request,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Response> response){
   knowledge_graph_msgs::msg::Edge my_edge;
   my_edge.edge_class = request->edge.edge_class;
   my_edge.source_node = request->edge.source_node;
@@ -40,7 +40,7 @@ void NewNode::createEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Reques
     }
 };
 
-void NewNode::removeNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request ,const std::shared_ptr<my_graph::srv::CreateNode::Response> response ){
+void NewNode::removeNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Request> request ,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Response> response ){
     knowledge_graph_msgs::msg::Node my_node;
     request_remove_node_received=true;
     my_node.node_name = request->node.node_name;
@@ -51,7 +51,7 @@ void NewNode::removeNode(const std::shared_ptr<my_graph::srv::CreateNode::Reques
     }
 };
 
-void NewNode::removeEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Request> request,const std::shared_ptr<my_graph::srv::CreateEdge::Response> response ){
+void NewNode::removeEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Request> request,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Response> response ){
   knowledge_graph_msgs::msg::Edge my_edge;
   my_edge.edge_class = request->edge.edge_class;
   my_edge.source_node = request->edge.source_node;
@@ -63,7 +63,7 @@ void NewNode::removeEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Reques
 };
 
     
-  void NewNode::addPropertyNode(const std::shared_ptr<my_graph::srv::CreateNode::Request> request ,const std::shared_ptr<my_graph::srv::CreateNode::Response> response ){
+  void NewNode::addPropertyNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Request> request ,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Response> response ){
      knowledge_graph_msgs::msg::Node my_node;
      my_node = request->node;
     //  for (auto& property:my_node.properties){
@@ -77,13 +77,13 @@ void NewNode::removeEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Reques
     RCLCPP_INFO(this->get_logger(),"Node property service");
   };
 
-  void NewNode::addPropertyEdge(const std::shared_ptr<my_graph::srv::CreateEdge::Request> request ,const std::shared_ptr<my_graph::srv::CreateEdge::Response> response ){
-  //   //  knowledge_graph_msgs::msg::Edge my_edge;
-  //   //  my_edge = request->edge;
-  //   // for (auto& property:my_edge.properties){
-  //   //  if(knowledge_graph::add_property(my_edge,property.key,property.value)==true){
-  //   //   response->resultado = 1;
-  //   //  }
-  //   //  }
-  //   // RCLCPP_INFO(this->get_logger(),"Edge property service");
+  void NewNode::addPropertyEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Request> request ,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Response> response ){
+     knowledge_graph_msgs::msg::Edge my_edge;
+     my_edge = request->edge;
+    for (auto& property:my_edge.properties){
+     if(knowledge_graph::add_property(my_edge,property.key,property.value)==true){
+      response->resultado = 1;
+     }
+     }
+    RCLCPP_INFO(this->get_logger(),"Edge property service");
   };
