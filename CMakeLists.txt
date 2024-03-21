@@ -44,14 +44,7 @@ set(SOURCE_CPP_FILES
     src/${SUBPROJECT_NAME}.cpp 
     )
 
-# rosidl_generate_interfaces(${PROJECT_NAME}_msgs
-#   srv/CreateNode.srv
-#   srv/CreateEdge.srv
-#   DEPENDENCIES knowledge_graph_msgs
-# )
 
-# rosidl_get_typesupport_target(cpp_typesupport_target
-#   ${PROJECT_NAME}_msgs rosidl_typesupport_cpp)
 
 ament_export_dependencies(rosidl_default_runtime)
 

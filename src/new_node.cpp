@@ -1,4 +1,4 @@
-#include "new_node.hpp"
+#include "as2_knowledge_graph_service.hpp"
 
 void NewNode::timerCallback(){
  
@@ -11,14 +11,11 @@ void NewNode::createNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::Cr
     my_node.node_name = request->node.node_name;
     my_node.node_class = request->node.node_class;
 
-    if((response->resultado=request_name_received)==1){
-      RCLCPP_INFO(this->get_logger(),"successfullly received node");
-    }; 
-
     this->graph_ = knowledge_graph::KnowledgeGraph::get_instance(shared_from_this());
     RCLCPP_INFO(this->get_logger(),"successfully built node");
      if(this->graph_->update_node(my_node,1)==true){
-    RCLCPP_INFO(this->get_logger()," successfully update"); 
+    RCLCPP_INFO(this->get_logger()," successfully update");
+    response->resultado=true;
     };
 };
 

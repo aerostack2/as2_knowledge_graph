@@ -1,4 +1,4 @@
-#include "new_node.hpp"
+#include "as2_knowledge_graph_service.hpp"
 
 int main(int argc, char ** argv) {
   rclcpp::init(argc, argv);

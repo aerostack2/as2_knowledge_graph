@@ -35,7 +35,7 @@ class ServiceClient : public as2::Node{
             return this->service_done_;
         }
 
-    protected:
+    public:
 
         bool service_done_ = false;
 
@@ -48,8 +48,8 @@ class ServiceClient : public as2::Node{
         rclcpp::Client<as2_knowledge_graph_msgs::srv::CreateEdge>::SharedPtr client_add_property_edge_;
         
          void timerCallback();
-         void createNode(const knowledge_graph_msgs::msg::Node &client_);
-         void createEdge();
+         bool createNode(const knowledge_graph_msgs::msg::Node &client_);
+         void createEdge(const knowledge_graph_msgs::msg::Edge &client_);
          void removeNode();
          void removeEdge();
          void addPropertyNode();

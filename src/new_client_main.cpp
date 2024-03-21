@@ -1,4 +1,4 @@
-#include "service_client.hpp"
+#include "as2_knowledge_graph_client.hpp"
 
 int main(int argc, char ** argv) {
     rclcpp::init(argc, argv);
