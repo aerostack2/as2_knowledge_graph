@@ -19,6 +19,7 @@ set (PROJECT_DEPENDENCIES
   ament_cmake_gtest
   as2_core
   as2_knowledge_graph_msgs
+  # rossdl_simple_test
 )
 
 set(SUBPROJECT_NAME
@@ -66,6 +67,11 @@ target_link_libraries(new_server_main  ${PROJECT_NAME} )
 add_executable(new_client_main src/new_client_main.cpp)
 ament_target_dependencies(new_client_main  ${PROJECT_DEPENDENCIES})
 target_link_libraries(new_client_main ${PROJECT_NAME} )
+
+# rossdl_generate_code(${PROJECT_NAME}
+#   "description.ros2"
+#   ${dependencies}
+# )
 
 
 

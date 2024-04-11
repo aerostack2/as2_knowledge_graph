@@ -38,7 +38,25 @@ public:
     add_property_edge_=this->create_service<as2_knowledge_graph_msgs::srv::CreateEdge>("add_property_edge", std::bind(&NewNode::addPropertyEdge, this, _1, _2));
 
     timer_ = this->create_wall_timer(20ms, std::bind(&NewNode::timerCallback, this));
+  }
+  ~NewNode(){
+
+    service_create_node_.reset();
+    service_create_edge_.reset();
+    service_remove_node_.reset();
+    service_remove_edge_.reset();
+    add_property_node_.reset();
+    add_property_edge_.reset();
+
+    //graph_->get_instance(shared_from_this());
+    knowledge_graph::KnowledgeGraph::pinstance.reset();
+
+    RCLCPP_INFO(get_logger()," before reset %ld",graph_.use_count());
+    graph_.reset();
+    RCLCPP_INFO(get_logger(),"after reset %ld",graph_.use_count());
+    timer_.reset();
   } 
+
 
 protected:
     std::shared_ptr<knowledge_graph::KnowledgeGraph> graph_;

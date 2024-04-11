@@ -12,11 +12,13 @@ void NewNode::createNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::Cr
     my_node.node_class = request->node.node_class;
 
     this->graph_ = knowledge_graph::KnowledgeGraph::get_instance(shared_from_this());
+    RCLCPP_INFO(this->get_logger(),"graph in create node %ld",graph_.use_count());
     RCLCPP_INFO(this->get_logger(),"successfully built node");
      if(this->graph_->update_node(my_node,1)==true){
     RCLCPP_INFO(this->get_logger()," successfully update");
     response->resultado=true;
     };
+        RCLCPP_INFO(get_logger(),"graph in create node %ld",graph_.use_count());
 };
 
 void NewNode::createEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Request> request,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Response> response){
