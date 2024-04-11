@@ -46,33 +46,33 @@ void spin_node(std::shared_ptr<NewNode> server_node){
 
 
 // // //Create 1 node
-// TEST(MyTest, serviceCall){
-//     running = true;
-//    auto thread = std::thread(spin_node,server_node);
-//     client_node = std::make_shared<ServiceClient>();
+TEST(MyTest, serviceCall){
+    running = true;
+   auto thread = std::thread(spin_node,server_node);
+    client_node = std::make_shared<ServiceClient>();
 
-//     //Add node name
-//     bool flag;
-//     flag = client_node->createNode(get_name_test());
-//     ASSERT_EQ(flag,true);
-//     ASSERT_EQ(flag,false);
+    //Add node name
+    bool flag;
+    flag = client_node->createNode(get_name_test());
+    ASSERT_EQ(flag,true);
+    //ASSERT_EQ(flag,false);
 
-//    //stop during 10s
-//    std::this_thread::sleep_for(10s);
+   //stop during 1s
+   std::this_thread::sleep_for(1s);
 
-//     //Response received
-//     client_node.reset();
-//     running = false;
-//     thread.join();
-    // std::cout<< "Server killed" << std::endl;
+    //Response received
+    client_node.reset();
+    running = false;
+    thread.join();
+    std::cout<< "Server killed" << std::endl;
 
-    // std::this_thread::sleep_for(1s);
-    // std::cout<< "exiting" << std::endl;
+    std::this_thread::sleep_for(1s);
+    std::cout<< "exiting" << std::endl;
     
 
     
 
-// }
+}
 
 
 TEST(MyTest, twonodes){
@@ -81,14 +81,12 @@ TEST(MyTest, twonodes){
     client_node = std::make_shared<ServiceClient>();
 
     // Add node name
-    bool flag;
-    //bool flag_1, flag_2;
-    flag = client_node->createNode(get_name_test());
-    // flag_1 = client_node->createNode(get_name_test());
-    // flag_2 = client_node->createNode(get_name_test2());
-    // ASSERT_EQ(flag,true);
-    // ASSERT_EQ(flag,false);
-    // client_node->shutdown();
+    bool flag_1, flag_2;
+ 
+    flag_1 = client_node->createNode(get_name_test());
+    flag_2 = client_node->createNode(get_name_test2());
+    ASSERT_EQ(flag_1,true);
+    ASSERT_EQ(flag_2,true);
 
    //stop during 10s
    std::this_thread::sleep_for(1s);
