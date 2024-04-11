@@ -57,9 +57,14 @@ public:
     timer_.reset();
   } 
 
-
+public:
+    std::shared_ptr<knowledge_graph::KnowledgeGraph> getKnowledgeGraph() {return graph_;};
 protected:
+    
     std::shared_ptr<knowledge_graph::KnowledgeGraph> graph_;
+    
+
+    
     rclcpp::TimerBase::SharedPtr timer_; 
     rclcpp::Service<as2_knowledge_graph_msgs::srv::CreateNode>::SharedPtr service_create_node_;
     rclcpp::Service<as2_knowledge_graph_msgs::srv::CreateEdge>::SharedPtr add_property_edge_;

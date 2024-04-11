@@ -49,7 +49,7 @@ class ServiceClient : public as2::Node{
         
          void timerCallback();
          bool createNode(const knowledge_graph_msgs::msg::Node &client_);
-         void createEdge(const knowledge_graph_msgs::msg::Edge &client_);
+         bool createEdge(const knowledge_graph_msgs::msg::Edge &client_);
          void removeNode();
          void removeEdge();
          void addPropertyNode();

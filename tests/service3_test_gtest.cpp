@@ -9,8 +9,9 @@
 std::atomic<bool> running=true;
 std::shared_ptr<NewNode> server_node;
 std::shared_ptr<ServiceClient> client_node;
+// std::shared_ptr<ServiceClient> client_edge;
 
-//Example 1
+//Example node graph1
 knowledge_graph_msgs::msg::Node get_name_test(){
     knowledge_graph_msgs::msg::Node ret_node;
     ret_node.node_name="Paco";
@@ -18,13 +19,47 @@ knowledge_graph_msgs::msg::Node get_name_test(){
     return ret_node;
  };
 
-//Example 2
+//Example node graph2
 knowledge_graph_msgs::msg::Node get_name_test2(){
     knowledge_graph_msgs::msg::Node ret_node;
     ret_node.node_name="Sara";
     ret_node.node_class="Persona";
     return ret_node;
  };
+
+ //Example node graph3
+knowledge_graph_msgs::msg::Node get_name_test3(){
+    knowledge_graph_msgs::msg::Node ret_node;
+    ret_node.node_name="Ana";
+    ret_node.node_class="Persona";
+    return ret_node;
+ };
+
+ //Example edge graph
+  knowledge_graph_msgs::msg::Edge get_edge_test1(){
+    knowledge_graph_msgs::msg::Edge ret_edge;
+    ret_edge.edge_class = "sees";
+    ret_edge.source_node = "Sara";
+    ret_edge.target_node = "Ana";
+    return ret_edge;
+ };
+
+    //Access to my graph nodes
+    void accessMyGraph(){
+    std::vector<std::string> node_names;
+    // std::vector<knowledge_graph_msgs::msg::Edge> edge_name;
+    node_names = server_node->getKnowledgeGraph()->get_node_names();
+
+    std::cout<<"Inside my graph there are the nodes:"<<std::endl;
+    for (size_t i=0; i<server_node->getKnowledgeGraph()->get_node_names().size();i++){
+      std::cout<<node_names.at(i)<<std::endl;
+      // for(size_t i=0; i<server_node->getKnowledgeGraph()->get_node_names().size();i++){
+      //   std::cout<<"There is an edges between:"<<std::endl;
+      //   edge_name = server_node->getKnowledgeGraph()->get_edges(node_names.at(i), node_names.at(1+i));
+      //   std::cout<<edge_name.at(i).edge_class<<std::endl;
+      // }
+    }
+    };
 
 
 //Spin the service
@@ -45,7 +80,7 @@ void spin_node(std::shared_ptr<NewNode> server_node){
 };
 
 
-// // //Create 1 node
+ //Create 1 node
 TEST(MyTest, serviceCall){
     running = true;
    auto thread = std::thread(spin_node,server_node);
@@ -55,7 +90,11 @@ TEST(MyTest, serviceCall){
     bool flag;
     flag = client_node->createNode(get_name_test());
     ASSERT_EQ(flag,true);
+
     //ASSERT_EQ(flag,false);
+
+    //Show service
+    
 
    //stop during 1s
    std::this_thread::sleep_for(1s);
@@ -79,17 +118,28 @@ TEST(MyTest, twonodes){
     running = true;
    auto thread = std::thread(spin_node,server_node);
     client_node = std::make_shared<ServiceClient>();
+    // client_edge = std::make_shared<ServiceClient>();
 
     // Add node name
-    bool flag_1, flag_2;
+    bool flag_2, flag_3, flag_edge_1;
  
-    flag_1 = client_node->createNode(get_name_test());
     flag_2 = client_node->createNode(get_name_test2());
-    ASSERT_EQ(flag_1,true);
+    flag_3 = client_node->createNode(get_name_test3());
     ASSERT_EQ(flag_2,true);
+    ASSERT_EQ(flag_3,true);
+
+    flag_edge_1 = client_node->createEdge(get_edge_test1());
+    ASSERT_EQ(flag_edge_1,true);
 
    //stop during 10s
    std::this_thread::sleep_for(1s);
+
+   //
+    std::vector<knowledge_graph_msgs::msg::Edge> edge_name;
+    edge_name = server_node->getKnowledgeGraph()->get_edges("Sara", "Ana");
+    std::cout<<edge_name.at(0).source_node<<std::endl;
+    std::cout<<edge_name.at(0).edge_class<<std::endl;
+    std::cout<<edge_name.at(0).target_node<<std::endl;
 
     //Response received
     
@@ -114,9 +164,11 @@ int main(int argc, char * argv[])
   
   
   auto result = RUN_ALL_TESTS();
+  accessMyGraph();
   
   //delete the node
     client_node.reset();
+    // client_edge.reset();
     server_node.reset();
   //server_node->shutdown();
 

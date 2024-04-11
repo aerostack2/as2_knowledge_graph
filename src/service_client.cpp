@@ -49,18 +49,38 @@ bool ServiceClient::createNode(const knowledge_graph_msgs::msg::Node &client_){
 //     // }
 // };
 
-void ServiceClient::createEdge(const knowledge_graph_msgs::msg::Edge &client_){
-    knowledge_graph_msgs::msg::Edge my_edge;
+//Asynchronous create edge request
+// void ServiceClient::createEdge(const knowledge_graph_msgs::msg::Edge &client_){
+//     knowledge_graph_msgs::msg::Edge my_edge;
+//     auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateEdge::Request>();
+//     request->edge.edge_class=client_.edge_class;
+//     request->edge.source_node=client_.source_node;
+//     request->edge.target_node=client_.target_node;
+//     // request->edge.edge_class = my_edge.edge_class ;
+//     // request->edge.source_node = my_edge.source_node;
+//     // request->edge.target_node = my_edge.target_node;
+//     auto result = client_create_edge_->async_send_request(request);
+//     RCLCPP_INFO(this->get_logger(),"Edge class: %s\n Source node: %s\n Target node: %s\n",request->edge.edge_class.c_str(),request->edge.source_node.c_str(),request->edge.target_node.c_str());
+// };
+
+//Synchronous create edge request
+bool ServiceClient::createEdge(const knowledge_graph_msgs::msg::Edge &client_){
+    auto set_cli = as2::SynchronousServiceClient<as2_knowledge_graph_msgs::srv::CreateEdge>("create_edge", this);
     auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateEdge::Request>();
-    request->edge.edge_class=client_.edge_class;
-    request->edge.source_node=client_.source_node;
-    request->edge.target_node=client_.target_node;
-    // request->edge.edge_class = my_edge.edge_class ;
-    // request->edge.source_node = my_edge.source_node;
-    // request->edge.target_node = my_edge.target_node;
-    auto result = client_create_edge_->async_send_request(request);
-    RCLCPP_INFO(this->get_logger(),"Edge class: %s\n Source node: %s\n Target node: %s\n",request->edge.edge_class.c_str(),request->edge.source_node.c_str(),request->edge.target_node.c_str());
+    auto response = std::make_shared<as2_knowledge_graph_msgs::srv::CreateEdge::Response>();
+    request->edge.edge_class = client_.edge_class;
+    request->edge.source_node = client_.source_node;
+    request->edge.target_node = client_.target_node;
+    bool out = set_cli.sendRequest(request, response);
+    if(out && response){
+       RCLCPP_INFO(this->get_logger(),"Edge class: %s\n Source node: %s\n Target node: %s\n",request->edge.edge_class.c_str(),request->edge.source_node.c_str(),request->edge.target_node.c_str());
+       return true;
+    }else{
+        RCLCPP_INFO(this->get_logger(),"it was not able to creted de node");
+        return false;
+    }
 };
+
 void ServiceClient::removeNode(){
     knowledge_graph_msgs::msg::Node my_node;
     auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Request>();
