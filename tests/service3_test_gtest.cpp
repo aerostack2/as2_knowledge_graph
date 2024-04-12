@@ -44,6 +44,8 @@ knowledge_graph_msgs::msg::Node get_name_test3(){
     return ret_edge;
  };
 
+ //
+
     //Access to my graph nodes
     void readMyGraph(){
     std::vector<std::string> node_names;
