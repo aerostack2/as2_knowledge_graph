@@ -27,12 +27,12 @@ knowledge_graph_msgs::msg::Node get_name_test(){
 /* Test fixture */
 class MyTest : public testing::Test {
 public:
-  std::shared_ptr<NewNode> server_node;
+  std::shared_ptr<KnowledgeGraphServer> server_node;
   std::shared_ptr<NodeTest> client_node;
   rclcpp::executors::SingleThreadedExecutor executor;
 
   void SetUp() {
-    server_node = std::make_shared<NewNode>();
+    server_node = std::make_shared<KnowledgeGraphServer>();
     client_node = std::make_shared<NodeTest>();
 
     executor.add_node(server_node);
@@ -62,8 +62,8 @@ TEST(service_test_gtest, get_name){
 
 
   // rclcpp::executors::SingleThreadedExecutor executor;
-  //  std::shared_ptr<NewNode> server_node;
-  //  server_node = std::make_shared<NewNode>();
+  //  std::shared_ptr<KnowledgeGraphServer> server_node;
+  //  server_node = std::make_shared<KnowledgeGraphServer>();
   //  executor.add_node(server_node);
   // knowledge_graph_msgs::msg::Node name1 = get_name_test();
   //  auto res1 = node_test->testCreate(name1); 

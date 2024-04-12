@@ -2,7 +2,7 @@
 
 int main(int argc, char ** argv) {
     rclcpp::init(argc, argv);
-    auto service_client = std::make_shared<ServiceClient>();
+    auto service_client = std::make_shared<KnowledgeGraphClient>();
     while (!service_client->is_service_done()) {
         rclcpp::spin_some(service_client);
     }

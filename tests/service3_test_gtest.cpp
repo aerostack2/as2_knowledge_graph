@@ -7,9 +7,9 @@
 
 //global items
 std::atomic<bool> running=true;
-std::shared_ptr<NewNode> server_node;
-std::shared_ptr<ServiceClient> client_node;
-// std::shared_ptr<ServiceClient> client_edge;
+std::shared_ptr<KnowledgeGraphServer> server_node;
+std::shared_ptr<KnowledgeGraphClient> client_node;
+// std::shared_ptr<KnowledgeGraphClient> client_edge;
 
 //Example node graph1
 knowledge_graph_msgs::msg::Node get_name_test(){
@@ -69,7 +69,7 @@ knowledge_graph_msgs::msg::Node get_name_test3(){
 
 
 //Spin the service
-void spin_node(std::shared_ptr<NewNode> server_node){
+void spin_node(std::shared_ptr<KnowledgeGraphServer> server_node){
     rclcpp::Rate rate(10);
     rclcpp::executors::SingleThreadedExecutor executor;
     std::cout << "node spin"<< std::endl;
@@ -90,7 +90,7 @@ void spin_node(std::shared_ptr<NewNode> server_node){
 TEST(MyTest, serviceCall){
     running = true;
    auto thread = std::thread(spin_node,server_node);
-    client_node = std::make_shared<ServiceClient>();
+    client_node = std::make_shared<KnowledgeGraphClient>();
 
     //Add node name
     bool flag;
@@ -118,8 +118,8 @@ TEST(MyTest, serviceCall){
 TEST(MyTest, twonodes){
     running = true;
    auto thread = std::thread(spin_node,server_node);
-    client_node = std::make_shared<ServiceClient>();
-    // client_edge = std::make_shared<ServiceClient>();
+    client_node = std::make_shared<KnowledgeGraphClient>();
+    // client_edge = std::make_shared<KnowledgeGraphClient>();
 
     // Add node name
     bool flag_2, flag_3, flag_edge_1;
@@ -159,7 +159,7 @@ TEST(MyTest, twonodes){
 TEST(MyTest, deleteNode){
   running = true;
   auto thread = std::thread(spin_node,server_node);
-  client_node = std::make_shared<ServiceClient>();
+  client_node = std::make_shared<KnowledgeGraphClient>();
   bool flag_delete, flag_delete_1;
   flag_delete=client_node->createNode(get_name_test());
   ASSERT_EQ(flag_delete,true);
@@ -184,7 +184,7 @@ int main(int argc, char * argv[])
   rclcpp::init(argc, argv); 
 
   //add node before de init
-  server_node = std::make_shared<NewNode>();
+  server_node = std::make_shared<KnowledgeGraphServer>();
   
   
   auto result = RUN_ALL_TESTS();

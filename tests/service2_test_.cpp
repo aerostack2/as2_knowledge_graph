@@ -11,7 +11,7 @@ class MyTest : public testing::Test {
 public:
     //Construtor
     MyTest() {
-        server_node = std::make_shared<NewNode>();
+        server_node = std::make_shared<KnowledgeGraphServer>();
         client_node = std::make_shared<ServiceClient>();
 
         executor.add_node(server_node);
@@ -26,7 +26,7 @@ public:
         server_node.reset();
     }  
     
-    std::shared_ptr<NewNode> server_node;
+    std::shared_ptr<KnowledgeGraphServer> server_node;
     std::shared_ptr<ServiceClient> client_node;
     rclcpp::executors::SingleThreadedExecutor executor;
 };

@@ -1,26 +1,27 @@
 #ifndef Service_Client_hpp
 #define Service_Client_hpp
 
+#include "as2_core/node.hpp"
+#include "as2_core/synchronous_service_client.hpp"
+#include "as2_knowledge_graph_msgs/srv/create_edge.hpp"
+#include "as2_knowledge_graph_msgs/srv/create_node.hpp"
+#include "knowledge_graph/knowledge_graph.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include <cstdlib>
 #include <memory>
 #include <optional>
-#include <cstdlib>
 #include <string>
 #include <vector>
-#include "rclcpp/rclcpp.hpp"
-#include "knowledge_graph/knowledge_graph.hpp"
-#include "as2_knowledge_graph_msgs/srv/create_node.hpp"
-#include "as2_knowledge_graph_msgs/srv/create_edge.hpp"
-#include "as2_core/synchronous_service_client.hpp"
-#include "as2_core/node.hpp"
+
 
 
 using namespace std::chrono_literals;
 using std::placeholders::_1;
 using std::placeholders::_2;
 
-class ServiceClient : public as2::Node{
+class KnowledgeGraphClient : public as2::Node{
     public:
-        ServiceClient() : as2::Node("my_client_node"){
+        KnowledgeGraphClient() : as2::Node("my_client_node"){
             client_create_node_=this->create_client<as2_knowledge_graph_msgs::srv::CreateNode>("create_node");
             client_remove_node_=this->create_client<as2_knowledge_graph_msgs::srv::CreateNode>("remove_node");
             client_create_edge_=this->create_client<as2_knowledge_graph_msgs::srv::CreateEdge>("create_edge");
@@ -28,7 +29,7 @@ class ServiceClient : public as2::Node{
             client_add_property_node_=this->create_client<as2_knowledge_graph_msgs::srv::CreateNode>("add_property_node");
             client_add_property_edge_=this->create_client<as2_knowledge_graph_msgs::srv::CreateEdge>("add_property_edge");
 
-            timer_ = this->create_wall_timer(20ms, std::bind(&ServiceClient::timerCallback, this));
+            timer_ = this->create_wall_timer(20ms, std::bind(&KnowledgeGraphClient::timerCallback, this));
         }
 
         bool is_service_done() const {

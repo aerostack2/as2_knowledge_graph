@@ -1,27 +1,29 @@
 #include "as2_knowledge_graph_service.hpp"
+#include <memory>
+#include <rclcpp/node.hpp>
 
-void NewNode::timerCallback(){
+void KnowledgeGraphServer::timerCallback(){
  
 };
 
-void NewNode::createNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Request> request,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Response> response ){
+void KnowledgeGraphServer::createNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Request> request,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Response> response ){
+    
     RCLCPP_INFO(this->get_logger(),"service create node");
     knowledge_graph_msgs::msg::Node my_node;
     request_name_received=true;
     my_node.node_name = request->node.node_name;
     my_node.node_class = request->node.node_class;
-    std::shared_ptr<rclcpp::Node> ros2_node_ptr = shared_from_this();
-    this->graph_ = std::make_shared<knowledge_graph::KnowledgeGraph>(ros2_node_ptr);
-    //RCLCPP_INFO(this->get_logger(),"graph in create node %ld",graph_.use_count());
-    RCLCPP_INFO(this->get_logger(),"successfully built node");
-     if(this->graph_->update_node(my_node,1)==true){
-    RCLCPP_INFO(this->get_logger()," successfully update");
-    response->resultado=true;
-    };
-    //RCLCPP_INFO(get_logger(),"graph in create node %ld",graph_.use_count());
+
+  RCLCPP_INFO(this->get_logger(), "graph in create node %ld",graph_.use_count());
+  RCLCPP_INFO(this->get_logger(), "successfully built node");
+  if (this->graph_->update_node(my_node, 1) == true) {
+    RCLCPP_INFO(this->get_logger(), " successfully update");
+    response->resultado = true;
+  };
+  RCLCPP_INFO(get_logger(), "graph in create node %ld", graph_.use_count());
 };
 
-void NewNode::createEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Request> request,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Response> response){
+void KnowledgeGraphServer::createEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Request> request,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Response> response){
   knowledge_graph_msgs::msg::Edge my_edge;
   my_edge.edge_class = request->edge.edge_class;
   my_edge.source_node = request->edge.source_node;
@@ -39,7 +41,7 @@ void NewNode::createEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::Cr
     }
 };
 
-void NewNode::removeNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Request> request ,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Response> response ){
+void KnowledgeGraphServer::removeNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Request> request ,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Response> response ){
     knowledge_graph_msgs::msg::Node my_node;
     request_remove_node_received=true;
     my_node.node_name = request->node.node_name;
@@ -50,7 +52,7 @@ void NewNode::removeNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::Cr
     }
 };
 
-void NewNode::removeEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Request> request,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Response> response ){
+void KnowledgeGraphServer::removeEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Request> request,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Response> response ){
   knowledge_graph_msgs::msg::Edge my_edge;
   my_edge.edge_class = request->edge.edge_class;
   my_edge.source_node = request->edge.source_node;
@@ -62,7 +64,7 @@ void NewNode::removeEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::Cr
 };
 
     
-  void NewNode::addPropertyNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Request> request ,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Response> response ){
+  void KnowledgeGraphServer::addPropertyNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Request> request ,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Response> response ){
      knowledge_graph_msgs::msg::Node my_node;
      my_node = request->node;
     //  for (auto& property:my_node.properties){
@@ -76,7 +78,7 @@ void NewNode::removeEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::Cr
     RCLCPP_INFO(this->get_logger(),"Node property service");
   };
 
-  void NewNode::addPropertyEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Request> request ,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Response> response ){
+  void KnowledgeGraphServer::addPropertyEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Request> request ,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Response> response ){
      knowledge_graph_msgs::msg::Edge my_edge;
      my_edge = request->edge;
     for (auto& property:my_edge.properties){
