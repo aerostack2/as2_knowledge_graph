@@ -81,14 +81,35 @@ bool ServiceClient::createEdge(const knowledge_graph_msgs::msg::Edge &client_){
     }
 };
 
-void ServiceClient::removeNode(){
-    knowledge_graph_msgs::msg::Node my_node;
-    auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Request>();
-    request->node.node_name = my_node.node_name;
-    request->node.node_class = my_node.node_class;
-    auto result = client_remove_node_->async_send_request(request);
-    RCLCPP_INFO(this->get_logger(), "Remove node: %s",request->node.node_name.c_str());
+//Asynchronous delete Node
+// void ServiceClient::removeNode(){
+//     knowledge_graph_msgs::msg::Node my_node;
+//     auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Request>();
+//     request->node.node_name = my_node.node_name;
+//     request->node.node_class = my_node.node_class;
+//     auto result = client_remove_node_->async_send_request(request);
+//     RCLCPP_INFO(this->get_logger(), "Remove node: %s",request->node.node_name.c_str());
 
+// };
+
+//Synchronous delete Node
+bool ServiceClient::removeNode(const knowledge_graph_msgs::msg::Node &client_){
+    RCLCPP_INFO(this->get_logger(),"Deleting node name");
+    auto set_cli = as2::SynchronousServiceClient<as2_knowledge_graph_msgs::srv::CreateNode>("remove_node", this);
+    //Set request
+    auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Request>();
+    auto response = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Response>();
+    request->node.node_name = client_.node_name;
+    request->node.node_class = client_.node_class;
+    
+    bool out = set_cli.sendRequest(request, response);
+    if(out && response){
+    RCLCPP_INFO(this->get_logger(), "Remove node: %s",request->node.node_name.c_str());
+       return true;
+    }else{
+        RCLCPP_INFO(this->get_logger(),"it was not able to creted de node");
+        return false;
+    }
 };
 
 void ServiceClient::removeEdge(){
@@ -101,11 +122,35 @@ void ServiceClient::removeEdge(){
     RCLCPP_INFO(this->get_logger(),"Remove edge: %s",request->edge.edge_class.c_str());
 };
 
-void ServiceClient::addPropertyNode(){
+//Asynchronous addPropertyNode
+// void ServiceClient::addPropertyNode(){
+//     auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Request>();
+//     auto result = client_add_property_node_->async_send_request(request);
+//     for(size_t i=0; i<request->node.properties.size(); i++){
+//        RCLCPP_INFO(this->get_logger(),"Add property: %d",request->node.properties.at(i).value.int_value); 
+//     }
+// };
+
+//Synchronous addProperty
+bool ServiceClient::addPropertyNode(const knowledge_graph_msgs::msg::Node &client_){
+    RCLCPP_INFO(this->get_logger(),"Adding properties to the node");
+    auto set_cli = as2::SynchronousServiceClient<as2_knowledge_graph_msgs::srv::CreateNode>("add_property_node", this);
+
     auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Request>();
-    auto result = client_add_property_node_->async_send_request(request);
+    auto response = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Response>();
+    request->node.node_name = client_.node_name;
+    request->node.node_class = client_.node_class;
+    bool out = set_cli.sendRequest(request, response);
     for(size_t i=0; i<request->node.properties.size(); i++){
        RCLCPP_INFO(this->get_logger(),"Add property: %d",request->node.properties.at(i).value.int_value); 
+    }
+
+    if(out && response){
+    RCLCPP_INFO(this->get_logger(), "Remove node: %s",request->node.node_name.c_str());
+       return true;
+    }else{
+        RCLCPP_INFO(this->get_logger(),"it was not able to creted de node");
+        return false;
     }
 };
 

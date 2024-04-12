@@ -49,7 +49,7 @@ public:
     add_property_edge_.reset();
 
     //graph_->get_instance(shared_from_this());
-    knowledge_graph::KnowledgeGraph::pinstance.reset();
+    // knowledge_graph::KnowledgeGraph::pinstance.reset();
 
     RCLCPP_INFO(get_logger()," before reset %ld",graph_.use_count());
     graph_.reset();

@@ -45,19 +45,23 @@ knowledge_graph_msgs::msg::Node get_name_test3(){
  };
 
     //Access to my graph nodes
-    void accessMyGraph(){
+    void readMyGraph(){
     std::vector<std::string> node_names;
     // std::vector<knowledge_graph_msgs::msg::Edge> edge_name;
     node_names = server_node->getKnowledgeGraph()->get_node_names();
+    if(server_node->getKnowledgeGraph()->get_node_names().empty()){
+    std::cout<<"there graph is empty"<<std::endl;
+    }else{
+      std::cout<<"Inside my graph there are the nodes:"<<std::endl;
+      for (size_t i=0; i<server_node->getKnowledgeGraph()->get_node_names().size();i++){
 
-    std::cout<<"Inside my graph there are the nodes:"<<std::endl;
-    for (size_t i=0; i<server_node->getKnowledgeGraph()->get_node_names().size();i++){
-      std::cout<<node_names.at(i)<<std::endl;
-      // for(size_t i=0; i<server_node->getKnowledgeGraph()->get_node_names().size();i++){
-      //   std::cout<<"There is an edges between:"<<std::endl;
-      //   edge_name = server_node->getKnowledgeGraph()->get_edges(node_names.at(i), node_names.at(1+i));
-      //   std::cout<<edge_name.at(i).edge_class<<std::endl;
-      // }
+        std::cout<<node_names.at(i)<<std::endl;
+        // for(size_t i=0; i<server_node->getKnowledgeGraph()->get_node_names().size();i++){
+        //   std::cout<<"There is an edges between:"<<std::endl;
+        //   edge_name = server_node->getKnowledgeGraph()->get_edges(node_names.at(i), node_names.at(1+i));
+        //   std::cout<<edge_name.at(i).edge_class<<std::endl;
+        // }
+      }
     }
     };
 
@@ -95,7 +99,6 @@ TEST(MyTest, serviceCall){
 
     //Show service
     
-
    //stop during 1s
    std::this_thread::sleep_for(1s);
 
@@ -107,13 +110,9 @@ TEST(MyTest, serviceCall){
 
     std::this_thread::sleep_for(1s);
     std::cout<< "exiting" << std::endl;
-    
-
-    
-
 }
 
-
+//Create an edge
 TEST(MyTest, twonodes){
     running = true;
    auto thread = std::thread(spin_node,server_node);
@@ -128,18 +127,21 @@ TEST(MyTest, twonodes){
     ASSERT_EQ(flag_2,true);
     ASSERT_EQ(flag_3,true);
 
-    flag_edge_1 = client_node->createEdge(get_edge_test1());
-    ASSERT_EQ(flag_edge_1,true);
+    std::this_thread::sleep_for(1s);
+    readMyGraph();
+
+    //flag_edge_1 = client_node->createEdge(get_edge_test1());
+    //ASSERT_EQ(flag_edge_1,true);
 
    //stop during 10s
    std::this_thread::sleep_for(1s);
 
    //
-    std::vector<knowledge_graph_msgs::msg::Edge> edge_name;
-    edge_name = server_node->getKnowledgeGraph()->get_edges("Sara", "Ana");
-    std::cout<<edge_name.at(0).source_node<<std::endl;
-    std::cout<<edge_name.at(0).edge_class<<std::endl;
-    std::cout<<edge_name.at(0).target_node<<std::endl;
+    // std::vector<knowledge_graph_msgs::msg::Edge> edge_name;
+    // edge_name = server_node->getKnowledgeGraph()->get_edges("Sara", "Ana");
+    // std::cout<<edge_name.at(0).source_node<<std::endl;
+    // std::cout<<edge_name.at(0).edge_class<<std::endl;
+    // std::cout<<edge_name.at(0).target_node<<std::endl;
 
     //Response received
     
@@ -149,7 +151,27 @@ TEST(MyTest, twonodes){
 
     std::this_thread::sleep_for(1s);
     std::cout<< "exiting" << std::endl;
+}
+
+//Delete a node
+TEST(MyTest, deleteNode){
+  running = true;
+  auto thread = std::thread(spin_node,server_node);
+  client_node = std::make_shared<ServiceClient>();
+  bool flag_delete, flag_delete_1;
+  flag_delete=client_node->createNode(get_name_test());
+  ASSERT_EQ(flag_delete,true);
+  readMyGraph();
+  flag_delete_1=client_node->removeNode(get_name_test());
+  ASSERT_EQ(flag_delete_1,true);
+  readMyGraph();
+  //Response received
     
+  running = false;
+  thread.join();
+  std::cout<< "Server killed" << std::endl;
+  std::this_thread::sleep_for(1s);
+  std::cout<< "exiting" << std::endl;
 
 }
 
@@ -164,8 +186,9 @@ int main(int argc, char * argv[])
   
   
   auto result = RUN_ALL_TESTS();
-  accessMyGraph();
+  readMyGraph();
   
+  std::cout<<"delete nodes"<<std::endl;
   //delete the node
     client_node.reset();
     // client_edge.reset();

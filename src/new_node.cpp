@@ -10,15 +10,15 @@ void NewNode::createNode(const std::shared_ptr<as2_knowledge_graph_msgs::srv::Cr
     request_name_received=true;
     my_node.node_name = request->node.node_name;
     my_node.node_class = request->node.node_class;
-
-    this->graph_ = knowledge_graph::KnowledgeGraph::get_instance(shared_from_this());
-    RCLCPP_INFO(this->get_logger(),"graph in create node %ld",graph_.use_count());
+    std::shared_ptr<rclcpp::Node> ros2_node_ptr = shared_from_this();
+    this->graph_ = std::make_shared<knowledge_graph::KnowledgeGraph>(ros2_node_ptr);
+    //RCLCPP_INFO(this->get_logger(),"graph in create node %ld",graph_.use_count());
     RCLCPP_INFO(this->get_logger(),"successfully built node");
      if(this->graph_->update_node(my_node,1)==true){
     RCLCPP_INFO(this->get_logger()," successfully update");
     response->resultado=true;
     };
-        RCLCPP_INFO(get_logger(),"graph in create node %ld",graph_.use_count());
+    //RCLCPP_INFO(get_logger(),"graph in create node %ld",graph_.use_count());
 };
 
 void NewNode::createEdge(const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Request> request,const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Response> response){
