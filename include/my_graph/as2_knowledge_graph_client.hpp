@@ -60,7 +60,7 @@ public:
   bool createNode(const knowledge_graph_msgs::msg::Node & client_);
   bool createEdge(const knowledge_graph_msgs::msg::Edge & client_);
   bool removeNode(const knowledge_graph_msgs::msg::Node & client_);
-  void removeEdge();
+  bool removeEdge(const knowledge_graph_msgs::msg::Edge & client_);
   bool addPropertyNode(const knowledge_graph_msgs::msg::Node & client_);
   void addPropertyEdge();
 

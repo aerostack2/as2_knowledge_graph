@@ -10,7 +10,7 @@
 std::atomic<bool> running = true;
 std::shared_ptr<KnowledgeGraphServer> server_node;
 std::shared_ptr<KnowledgeGraphClient> client_node;
-// std::shared_ptr<KnowledgeGraphClient> client_edge;
+
 
 //Example node graph1
 knowledge_graph_msgs::msg::Node get_name_test()
@@ -120,96 +120,100 @@ void spin_node(std::shared_ptr<KnowledgeGraphServer> server_node)
 }
 
 
-//  //Create 1 node
-// TEST(MyTest, oneNode){
-//     running = true;
-//    auto thread = std::thread(spin_node,server_node);
-//     client_node = std::make_shared<KnowledgeGraphClient>();
+//Create 1 node
+TEST(MyTest, oneNode) {
+  running = true;
+  auto thread = std::thread(spin_node, server_node);
+  client_node = std::make_shared<KnowledgeGraphClient>();
 
-//     //Add node name
-//     bool flag;
-//     flag = client_node->createNode(get_name_test());
-//     ASSERT_EQ(flag,true);
+  //Add node name
+  bool flag;
+  flag = client_node->createNode(get_name_test());
+  ASSERT_EQ(flag, true);
 
-//     //ASSERT_EQ(flag,false);
+  //ASSERT_EQ(flag,false);
 
-//     //Show service
+  //Show service
 
-//    //stop during 1s
-//    std::this_thread::sleep_for(1s);
+  //stop during 1s
+  std::this_thread::sleep_for(1s);
 
-//     //Response received
-//     client_node.reset();
-//     running = false;
-//     thread.join();
-//     std::cout<< "Server killed" << std::endl;
+  //Response received
+  client_node.reset();
+  running = false;
+  thread.join();
+  std::cout << "Server killed" << std::endl;
 
-//     std::this_thread::sleep_for(1s);
-//     std::cout<< "exiting" << std::endl;
-// }
+  std::this_thread::sleep_for(1s);
+  std::cout << "exiting" << std::endl;
+}
 
-// //Create an edge
-// TEST(MyTest, twonodes){
-//     running = true;
-//    auto thread = std::thread(spin_node,server_node);
-//     client_node = std::make_shared<KnowledgeGraphClient>();
-//     // client_edge = std::make_shared<KnowledgeGraphClient>();
+//Create an edge
+TEST(MyTest, twonodes) {
+  running = true;
+  auto thread = std::thread(spin_node, server_node);
+  client_node = std::make_shared<KnowledgeGraphClient>();
+  // client_edge = std::make_shared<KnowledgeGraphClient>();
 
-//     // Add node name
-//     bool flag_2, flag_3, flag_edge_1;
+  // Add node name
+  bool flag_2, flag_3, flag_edge_1;
 
-//     flag_2 = client_node->createNode(get_name_test2());
-//     flag_3 = client_node->createNode(get_name_test3());
-//     ASSERT_EQ(flag_2,true);
-//     ASSERT_EQ(flag_3,true);
+  flag_2 = client_node->createNode(get_name_test2());
+  flag_3 = client_node->createNode(get_name_test3());
+  ASSERT_EQ(flag_2, true);
+  ASSERT_EQ(flag_3, true);
 
-//     std::this_thread::sleep_for(1s);
-//     readMyGraph();
+  std::this_thread::sleep_for(1s);
+  readMyGraph();
 
-//     flag_edge_1 = client_node->createEdge(get_edge_test1());
-//     ASSERT_EQ(flag_edge_1,true);
+  flag_edge_1 = client_node->createEdge(get_edge_test1());
+  ASSERT_EQ(flag_edge_1, true);
 
-//    //stop during 10s
-//    std::this_thread::sleep_for(1s);
+  //stop during 1s
+  std::this_thread::sleep_for(1s);
 
-//     std::vector<knowledge_graph_msgs::msg::Edge> edge_name;
-//     edge_name = server_node->getKnowledgeGraph()->get_edges("Sara", "Ana");
-//     std::cout<<edge_name.at(0).source_node<<std::endl;
-//     std::cout<<edge_name.at(0).edge_class<<std::endl;
-//     std::cout<<edge_name.at(0).target_node<<std::endl;
+  std::vector<knowledge_graph_msgs::msg::Edge> edge_name;
+  edge_name = server_node->getKnowledgeGraph()->get_edges("Sara", "Ana");
+  std::cout << edge_name.at(0).source_node << std::endl;
+  std::cout << edge_name.at(0).edge_class << std::endl;
+  std::cout << edge_name.at(0).target_node << std::endl;
+
+  if (true == client_node->removeEdge(get_edge_test1())) {
+    std::cout << "successfully remove edge" << std::endl;
+  }
 
 
-//     //Response received
+  //Response received
 
-//     running = false;
-//     thread.join();
-//     std::cout<< "Server killed" << std::endl;
+  running = false;
+  thread.join();
+  std::cout << "Server killed" << std::endl;
 
-//     std::this_thread::sleep_for(1s);
-//     std::cout<< "exiting" << std::endl;
-// }
+  std::this_thread::sleep_for(1s);
+  std::cout << "exiting" << std::endl;
+}
 
-// //Delete a node
-// TEST(MyTest, deleteNode){
-//   running = true;
-//   auto thread = std::thread(spin_node,server_node);
-//   client_node = std::make_shared<KnowledgeGraphClient>();
-//   bool flag_delete, flag_delete_1;
-//   flag_delete=client_node->createNode(get_name_test());
-//   ASSERT_EQ(flag_delete,true);
-//   readMyGraph();
-//   flag_delete_1=client_node->removeNode(get_name_test());
-//   ASSERT_EQ(flag_delete_1,true);
-//   readMyGraph();
-//   //Response received
+//Delete a node
+TEST(MyTest, deleteNode) {
+  running = true;
+  auto thread = std::thread(spin_node, server_node);
+  client_node = std::make_shared<KnowledgeGraphClient>();
+  bool flag_delete, flag_delete_1;
+  flag_delete = client_node->createNode(get_name_test());
+  ASSERT_EQ(flag_delete, true);
+  readMyGraph();
+  flag_delete_1 = client_node->removeNode(get_name_test());
+  ASSERT_EQ(flag_delete_1, true);
+  readMyGraph();
+  //Response received
 
-//   running = false;
-//   thread.join();
-//   std::cout<< "Server killed" << std::endl;
-//   std::this_thread::sleep_for(1s);
-//   std::cout<< "exiting" << std::endl;
+  running = false;
+  thread.join();
+  std::cout << "Server killed" << std::endl;
+  std::this_thread::sleep_for(1s);
+  std::cout << "exiting" << std::endl;
 
-// }
+}
 
 // Test create a property
 TEST(MyTest, oneNodeProperty) {

@@ -126,15 +126,40 @@ bool KnowledgeGraphClient::removeNode(const knowledge_graph_msgs::msg::Node & cl
   }
 }
 
-void KnowledgeGraphClient::removeEdge()
+//Asynchronous removeEdge
+// void KnowledgeGraphClient::removeEdge()
+// {
+//   knowledge_graph_msgs::msg::Edge my_edge;
+//   auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateEdge::Request>();
+//   request->edge.edge_class = my_edge.edge_class;
+//   request->edge.source_node = my_edge.source_node;
+//   request->edge.target_node = my_edge.target_node;
+//   auto result = client_remove_edge_->async_send_request(request);
+//   RCLCPP_INFO(this->get_logger(), "Remove edge: %s", request->edge.edge_class.c_str());
+// }
+
+//Syncronous removeEdge
+bool KnowledgeGraphClient::removeEdge(const knowledge_graph_msgs::msg::Edge & client_)
 {
-  knowledge_graph_msgs::msg::Edge my_edge;
+  RCLCPP_INFO(this->get_logger(), "Deleting edge");
+  auto set_cli = as2::SynchronousServiceClient<as2_knowledge_graph_msgs::srv::CreateEdge>(
+    "remove_edge", this);
+  //Set request
   auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateEdge::Request>();
-  request->edge.edge_class = my_edge.edge_class;
-  request->edge.source_node = my_edge.source_node;
-  request->edge.target_node = my_edge.target_node;
-  auto result = client_remove_edge_->async_send_request(request);
-  RCLCPP_INFO(this->get_logger(), "Remove edge: %s", request->edge.edge_class.c_str());
+  auto response = std::make_shared<as2_knowledge_graph_msgs::srv::CreateEdge::Response>();
+  request->edge = client_;
+
+  bool out = set_cli.sendRequest(request, response);
+  if (out && response) {
+    RCLCPP_INFO(
+      this->get_logger(), "Remove edge: %s between %s and %s ",
+      request->edge.edge_class.c_str(),
+      request->edge.source_node.c_str(), request->edge.target_node.c_str());
+    return true;
+  } else {
+    RCLCPP_INFO(this->get_logger(), "it was not able to removed the edge");
+    return false;
+  }
 }
 
 //Asynchronous addPropertyNode
