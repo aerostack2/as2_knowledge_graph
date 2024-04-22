@@ -10,28 +10,31 @@ using namespace std::chrono_literals;
 class NodeTest : public ServiceClient
 {
 public:
-
-bool testCreate(const knowledge_graph_msgs::msg::Node &test){
+  bool testCreate(const knowledge_graph_msgs::msg::Node & test)
+  {
     return createNode(test);
-}
+  }
 
 };
 
-knowledge_graph_msgs::msg::Node get_name_test(){
-    knowledge_graph_msgs::msg::Node ret_node;
-    ret_node.node_name="Paco";
-    ret_node.node_class="Persona";
-    return ret_node;
- };
+knowledge_graph_msgs::msg::Node get_name_test()
+{
+  knowledge_graph_msgs::msg::Node ret_node;
+  ret_node.node_name = "Paco";
+  ret_node.node_class = "Persona";
+  return ret_node;
+}
 
 /* Test fixture */
-class MyTest : public testing::Test {
+class MyTest : public testing::Test
+{
 public:
   std::shared_ptr<KnowledgeGraphServer> server_node;
   std::shared_ptr<NodeTest> client_node;
   rclcpp::executors::SingleThreadedExecutor executor;
 
-  void SetUp() {
+  void SetUp()
+  {
     server_node = std::make_shared<KnowledgeGraphServer>();
     client_node = std::make_shared<NodeTest>();
 
@@ -39,7 +42,8 @@ public:
     executor.add_node(client_node);
   }
 
-  void TearDown() {
+  void TearDown()
+  {
     executor.cancel();
     executor.remove_node(client_node);
     executor.remove_node(server_node);
@@ -47,18 +51,17 @@ public:
     server_node.reset();
   }
 };
-TEST(service_test_gtest, get_name){
+TEST(service_test_gtest, get_name) {
   std::shared_ptr<MyTest> my_test;
   knowledge_graph_msgs::msg::Node name1 = get_name_test();
-    //auto start = node_test->now();
+  //auto start = node_test->now();
   auto result_future = my_test->client_node->testCreate(name1);
   my_test->executor.spin_some();
-  printf("%d",result_future);
-  
+  printf("%d", result_future);
+
   //Esto da error
   // auto result = my_test->executor.spin_until_future_complete(result_future);
   // ASSERT_EQ(result, rclcpp::FutureReturnCode::SUCCESS);
-
 
 
   // rclcpp::executors::SingleThreadedExecutor executor;
@@ -66,7 +69,7 @@ TEST(service_test_gtest, get_name){
   //  server_node = std::make_shared<KnowledgeGraphServer>();
   //  executor.add_node(server_node);
   // knowledge_graph_msgs::msg::Node name1 = get_name_test();
-  //  auto res1 = node_test->testCreate(name1); 
+  //  auto res1 = node_test->testCreate(name1);
 
   //     executor.spin_some();
 

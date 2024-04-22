@@ -50,7 +50,7 @@ set(SOURCE_CPP_FILES
 ament_export_dependencies(rosidl_default_runtime)
 
 # Library
-add_library(${PROJECT_NAME} SHARED src/service_client.cpp src/new_node.cpp)
+add_library(${PROJECT_NAME} SHARED src/service_client.cpp src/new_node.cpp src/graph_utils.cpp)
 # Include headers in the library
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
