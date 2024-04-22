@@ -75,30 +75,30 @@ void readMyGraph()
     for (size_t i = 0; i < server_node->getKnowledgeGraph()->get_node_names().size(); i++) {
 
       std::cout << node_names.at(i) << std::endl;
-
-      // for(size_t i=0; i<server_node->getKnowledgeGraph()->get_node_names().size();i++){
-      //   std::cout<<"There is an edges between:"<<std::endl;
-      //   edge_name = server_node->getKnowledgeGraph()->get_edges(node_names.at(0), node_names.at(1));
-      //   std::cout<<edge_name.at(i).edge_class<<std::endl;
-      // }
     }
   }
 }
 
-// void readMyProperties(const knowledge_graph_msgs::msg::Node & name_node)
-// {
-//   knowledge_graph_msgs::msg::Node n_name;
-//   n_name = name_node;
-//   n_name.properties = server_node->getKnowledgeGraph()-
-//   std::vector<knowledge_graph_msgs::msg::Property> prop_names;
-//   for (size_t i = 0; i < server_node->getKnowledgeGraph()->get_node_names().size(); i++) {
+void readMyProperties(const knowledge_graph_msgs::msg::Node & name_node)
+{
+  knowledge_graph_msgs::msg::Node node;
+  node = name_node;
+  for (auto & node_name : server_node->getKnowledgeGraph()->get_node_names()) {
+    if (node.node_name == node_name) {
+      std::cout << "The node " << node_name << "has the properties: " << std::endl;
 
-//     // if (n_name.at(i).node_name == server_node->getKnowledgeGraph()->get_node_names().at(i)) {}
-//     // for (size_t j = 0; n_name.properties.at(j); j++) {
+      for (auto & prop : node.properties) {
+        std::cout <<
+          knowledge_graph::to_string(prop.value).c_str() << " of type " <<
+          prop.key <<
+          std::endl;
+      }
+    } else {
+      std::cout << "This node do not exists" << std::endl;
+    }
 
-//     // }
-//   }
-// }
+  }
+}
 
 
 //Spin the service
@@ -224,12 +224,9 @@ TEST(MyTest, oneNodeProperty) {
   auto node = get_node_property();
   flag_name = client_node->createNode(node);
   flag = client_node->addPropertyNode(node);
-
+  readMyProperties(node);
   ASSERT_EQ(flag, true);
 
-  //ASSERT_EQ(flag,false);
-
-  //Show service
 
   //stop during 1s
   std::this_thread::sleep_for(1s);
