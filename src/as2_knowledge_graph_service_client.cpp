@@ -1,6 +1,6 @@
 #include "as2_knowledge_graph_client.hpp"
 #include "knowledge_graph/graph_utils.hpp"
-#include "as2_knowledge_graph_graph_utils.hpp"
+#include "utils/as2_knowledge_graph_graph_utils.hpp"
 
 
 void KnowledgeGraphClient::timerCallback()

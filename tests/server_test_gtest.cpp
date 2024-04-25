@@ -1,5 +1,6 @@
 #include "as2_knowledge_graph_service.hpp"
 #include "as2_knowledge_graph_client.hpp"
+#include "utils/as2_knowledge_graph_graph_utils.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include <stdexcept>
 #include <vector>
@@ -164,6 +165,7 @@ TEST(MyTest, twonodes) {
   ASSERT_EQ(flag_3, true);
 
   std::this_thread::sleep_for(1s);
+
   readMyGraph();
 
   flag_edge_1 = client_node->createEdge(get_edge_test1());

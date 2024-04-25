@@ -29,7 +29,7 @@ class KnowledgeGraphServer : public rclcpp::Node
 {
 public:
   KnowledgeGraphServer()
-  : rclcpp::Node("my_knowledge_graph")
+  : rclcpp::Node("as2_knowledge_graph_server")
   {
     service_create_node_ = this->create_service<as2_knowledge_graph_msgs::srv::CreateNode>(
       "create_node", std::bind(&KnowledgeGraphServer::createNode, this, _1, _2));
@@ -50,8 +50,8 @@ public:
 
     static auto setup = this->create_wall_timer(
       20ms, [this]() {
-        if (!graph_) {
-          graph_ = std::make_shared<knowledge_graph::KnowledgeGraph>(
+        if (!knowledge_graph_ptr_) {
+          knowledge_graph_ptr_ = std::make_shared<knowledge_graph::KnowledgeGraph>(
             static_cast<std::shared_ptr<rclcpp::Node>>(
               this->shared_from_this()));
         }
@@ -66,22 +66,21 @@ public:
     service_remove_edge_.reset();
     add_property_node_.reset();
     add_property_edge_.reset();
-    graph_.reset();
+    knowledge_graph_ptr_.reset();
     timer_.reset();
   }
 
-public:
   std::shared_ptr<knowledge_graph::KnowledgeGraph> getKnowledgeGraph()
   {
-    if (!graph_) {
-      graph_ = std::make_shared<knowledge_graph::KnowledgeGraph>(
+    if (!knowledge_graph_ptr_) {
+      knowledge_graph_ptr_ = std::make_shared<knowledge_graph::KnowledgeGraph>(
         static_cast<std::shared_ptr<rclcpp::Node>>(this->shared_from_this()));
     }
-    return graph_;
+    return knowledge_graph_ptr_;
   }
 
 protected:
-  std::shared_ptr<knowledge_graph::KnowledgeGraph> graph_;
+  std::shared_ptr<knowledge_graph::KnowledgeGraph> knowledge_graph_ptr_;
 
 
   rclcpp::TimerBase::SharedPtr timer_;

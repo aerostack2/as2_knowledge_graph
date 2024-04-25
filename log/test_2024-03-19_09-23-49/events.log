@@ -1,6 +1,0 @@
-[0.000000] (-) TimerEvent: {}
-[0.000362] (my_graph) JobQueued: {'identifier': 'my_graph', 'dependencies': OrderedDict([('my_graph', '/home/carmendrpr/ros2_ws/src/KnowledgeGraph/install/my_graph')])}
-[0.000484] (my_graph) JobStarted: {'identifier': 'my_graph'}
-[0.099875] (-) TimerEvent: {}
-[0.102189] (my_graph) JobEnded: {'identifier': 'my_graph', 'rc': 0}
-[0.102645] (-) EventReactorShutdown: {}

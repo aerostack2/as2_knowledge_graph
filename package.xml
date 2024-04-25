@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>my_graph</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="carmendrpr@todo.todo">carmendrpr</maintainer>
+  <name>as2_knowledge_graph</name>
+  <version>0.0.1</version>
+  <description>Package to create a knowledge graph</description>
+  <maintainer email="c.derojas@alumnos.upm.es"></maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
@@ -18,7 +18,7 @@
   <depend>as2_knowledge_graph_msgs</depend>
   <depend>backward_ros</depend>
   <depend>as2_core</depend>
-  <!-- <depend>rossdl_simple_test</depend> -->
+
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-set(PROJECT_NAME my_graph)
+set(PROJECT_NAME as2_knowledge_graph)
 project(${PROJECT_NAME})
 
 set(CMAKE_BUILD_TYPE Debug)
@@ -19,12 +19,11 @@ set (PROJECT_DEPENDENCIES
   ament_cmake_gtest
   as2_core
   as2_knowledge_graph_msgs
-  # rossdl_simple_test
 )
 
 set(SUBPROJECT_NAME
-      new_client_main
-      new_server_main
+      # as2_knowledge_graph_service_client_main
+      as2_knowledge_graph_node_server_main
       )
 
 
@@ -50,7 +49,7 @@ set(SOURCE_CPP_FILES
 ament_export_dependencies(rosidl_default_runtime)
 
 # Library
-add_library(${PROJECT_NAME} SHARED src/service_client.cpp src/new_node.cpp src/graph_utils.cpp)
+add_library(${PROJECT_NAME} SHARED src/as2_knowledge_graph_service_client.cpp src/as2_knowledge_graph_node_server.cpp src/graph_utils.cpp)
 # Include headers in the library
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -60,19 +59,13 @@ ament_target_dependencies(${PROJECT_NAME} ${PROJECT_DEPENDENCIES})
 
 
 
-add_executable(new_server_main src/new_server_main.cpp)
-ament_target_dependencies(new_server_main ${PROJECT_DEPENDENCIES})
-target_link_libraries(new_server_main  ${PROJECT_NAME} )
+add_executable(as2_knowledge_graph_node_server_main src/as2_knowledge_graph_node_server_main.cpp)
+ament_target_dependencies(as2_knowledge_graph_node_server_main ${PROJECT_DEPENDENCIES})
+target_link_libraries(as2_knowledge_graph_node_server_main  ${PROJECT_NAME} )
 
-add_executable(new_client_main src/new_client_main.cpp)
-ament_target_dependencies(new_client_main  ${PROJECT_DEPENDENCIES})
-target_link_libraries(new_client_main ${PROJECT_NAME} )
-
-# rossdl_generate_code(${PROJECT_NAME}
-#   "description.ros2"
-#   ${dependencies}
-# )
-
+# add_executable(as2_knowledge_graph_service_client_main src/as2_knowledge_graph_service_client_main.cpp)
+# ament_target_dependencies(as2_knowledge_graph_service_client_main  ${PROJECT_DEPENDENCIES})
+# target_link_libraries(as2_knowledge_graph_service_client_main ${PROJECT_NAME} )
 
 
 #Install
@@ -80,6 +73,9 @@ install(
   DIRECTORY include/
   DESTINATION include
 )
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME})
 
 install(  TARGETS 
   ${SUBPROJECT_NAME}

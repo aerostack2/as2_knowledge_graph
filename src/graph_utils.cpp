@@ -1,4 +1,4 @@
-#include "as2_knowledge_graph_graph_utils.hpp"
+#include "utils/as2_knowledge_graph_graph_utils.hpp"
 
 knowledge_graph_msgs::msg::Content whichType(const knowledge_graph_msgs::msg::Property & prop)
 {
