@@ -2,7 +2,7 @@ repositories:
   knowledge_graph:
     type: git
     url: https://github.com/aerostack2/knowledge_graph.git
-    version: main
+    version: master
   as2_knowledge_graph_msgs:
     type: git
     url: https://github.com/aerostack2/as2_knowledge_graphs_msgs.git
