@@ -1,0 +1,11 @@
+repositories:
+    knowledge_graph:
+        type: git
+        url: https://github.com/aerostack2/knowledge_graph.git
+
+    as2_knowledge_graph_msgs:
+        type: git
+        url: https://github.com/aerostack2/as2_knowledge_graphs_msgs.git
+    as2_core:
+        type: git
+        url: https://github.com/aerostack2/aerostack2/tree/b81fd5693db6ceb0c87db45765c59be25f8804c0/as2_core

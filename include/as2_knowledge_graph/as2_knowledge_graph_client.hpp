@@ -22,7 +22,7 @@ class KnowledgeGraphClient : public as2::Node
 {
 public:
   KnowledgeGraphClient()
-  : as2::Node("my_client_node")
+  : as2::Node("as2_knowledge_graph_client")
   {
     client_create_node_ = this->create_client<as2_knowledge_graph_msgs::srv::CreateNode>(
       "create_node");
