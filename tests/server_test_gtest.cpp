@@ -70,7 +70,7 @@ void readMyGraph()
   std::vector<knowledge_graph_msgs::msg::Edge> edge_names;
   node_names = server_node->getKnowledgeGraph()->get_node_names();
   if (server_node->getKnowledgeGraph()->get_node_names().empty()) {
-    std::cout << "there graph is empty" << std::endl;
+    std::cout << "the graph is empty" << std::endl;
   } else {
     std::cout << "Inside my graph there are the nodes:" << std::endl;
     for (size_t i = 0; i < server_node->getKnowledgeGraph()->get_node_names().size(); i++) {

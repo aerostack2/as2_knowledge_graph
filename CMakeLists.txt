@@ -22,7 +22,7 @@ set (PROJECT_DEPENDENCIES
 )
 
 set(SUBPROJECT_NAME
-      # as2_knowledge_graph_service_client_main
+      as2_knowledge_graph_service_client_main
       as2_knowledge_graph_node_server_main
       )
 
@@ -63,9 +63,9 @@ add_executable(as2_knowledge_graph_node_server_main src/as2_knowledge_graph_node
 ament_target_dependencies(as2_knowledge_graph_node_server_main ${PROJECT_DEPENDENCIES})
 target_link_libraries(as2_knowledge_graph_node_server_main  ${PROJECT_NAME} )
 
-# add_executable(as2_knowledge_graph_service_client_main src/as2_knowledge_graph_service_client_main.cpp)
-# ament_target_dependencies(as2_knowledge_graph_service_client_main  ${PROJECT_DEPENDENCIES})
-# target_link_libraries(as2_knowledge_graph_service_client_main ${PROJECT_NAME} )
+add_executable(as2_knowledge_graph_service_client_main src/as2_knowledge_graph_service_client_main.cpp)
+ament_target_dependencies(as2_knowledge_graph_service_client_main  ${PROJECT_DEPENDENCIES})
+target_link_libraries(as2_knowledge_graph_service_client_main ${PROJECT_NAME} )
 
 
 #Install

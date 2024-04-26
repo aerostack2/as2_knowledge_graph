@@ -108,3 +108,20 @@ void KnowledgeGraphServer::addPropertyEdge(
   }
   RCLCPP_INFO(this->get_logger(), "Edge property service");
 }
+
+void KnowledgeGraphServer::readGraph(
+  const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Request> request,
+  const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Response> response)
+{
+  if (KnowledgeGraphServer::getKnowledgeGraph()->get_node_names().empty()) {
+    RCLCPP_INFO(this->get_logger(), "the graph is empty");
+  } else {
+    RCLCPP_INFO(this->get_logger(), "Inside the graph there are the nodes:");
+    for (auto & node_names:KnowledgeGraphServer::getKnowledgeGraph()->get_node_names()) {
+      knowledge_graph_msgs::msg::Node node;
+      node.node_name = node_names;
+      response->nodes.emplace_back(node);
+    }
+  }
+
+}
