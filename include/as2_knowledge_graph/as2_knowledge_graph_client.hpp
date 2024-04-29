@@ -5,6 +5,8 @@
 #include "as2_core/synchronous_service_client.hpp"
 #include "as2_knowledge_graph_msgs/srv/create_edge.hpp"
 #include "as2_knowledge_graph_msgs/srv/create_node.hpp"
+#include "as2_knowledge_graph_msgs/srv/read_graph.hpp"
+#include "as2_knowledge_graph_msgs/srv/read_edge_graph.hpp"
 #include "knowledge_graph/knowledge_graph.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include <cstdlib>
@@ -36,6 +38,16 @@ public:
       "add_property_node_");
     client_add_property_edge_ = this->create_client<as2_knowledge_graph_msgs::srv::CreateEdge>(
       "add_property_edge");
+    client_read_graph_ =
+      this->create_client<as2_knowledge_graph_msgs::srv::ReadGraph>("read_graph");
+    client_read_node_graph_ = this->create_client<as2_knowledge_graph_msgs::srv::ReadGraph>(
+      "read_node_graph");
+    client_read_edge_class_graph_ =
+      this->create_client<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>(
+      "read_edge_class_graph");
+    client_read_edge_source_target_graph_ =
+      this->create_client<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>(
+      "read_edge_source_target_graph");
 
     timer_ = this->create_wall_timer(20ms, std::bind(&KnowledgeGraphClient::timerCallback, this));
   }
@@ -55,6 +67,12 @@ public:
   rclcpp::Client<as2_knowledge_graph_msgs::srv::CreateEdge>::SharedPtr client_remove_edge_;
   rclcpp::Client<as2_knowledge_graph_msgs::srv::CreateNode>::SharedPtr client_add_property_node_;
   rclcpp::Client<as2_knowledge_graph_msgs::srv::CreateEdge>::SharedPtr client_add_property_edge_;
+  rclcpp::Client<as2_knowledge_graph_msgs::srv::ReadGraph>::SharedPtr client_read_graph_;
+  rclcpp::Client<as2_knowledge_graph_msgs::srv::ReadGraph>::SharedPtr client_read_node_graph_;
+  rclcpp::Client<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>::SharedPtr
+    client_read_edge_class_graph_;
+  rclcpp::Client<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>::SharedPtr
+    client_read_edge_source_target_graph_;
 
   void timerCallback();
   bool createNode(const knowledge_graph_msgs::msg::Node & client_);
@@ -63,7 +81,13 @@ public:
   bool removeEdge(const knowledge_graph_msgs::msg::Edge & client_);
   bool addPropertyNode(const knowledge_graph_msgs::msg::Node & client_);
   void addPropertyEdge();
-
+  bool readGraph(const std::string & node_name_client_);
+  bool readGraph();
+  bool readNodeGraph(const std::string & node_class_client_);
+  bool readEdgeClassGraph(
+    const knowledge_graph_msgs::msg::Node & source_client_,
+    const knowledge_graph_msgs::msg::Node & target_client_);
+  bool readEdgeSourceTargetGraph();
 
 };
 

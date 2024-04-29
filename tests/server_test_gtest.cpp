@@ -2,18 +2,17 @@
 #include "as2_knowledge_graph_client.hpp"
 #include "utils/as2_knowledge_graph_graph_utils.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include <stdexcept>
-#include <vector>
+
 
 #include "gtest/gtest.h"
 
-//global items
+// global items
 std::atomic<bool> running = true;
 std::shared_ptr<KnowledgeGraphServer> server_node;
 std::shared_ptr<KnowledgeGraphClient> client_node;
 
 
-//Example node graph1
+// Example node graph1
 knowledge_graph_msgs::msg::Node get_name_test()
 {
   knowledge_graph_msgs::msg::Node ret_node;
@@ -22,7 +21,7 @@ knowledge_graph_msgs::msg::Node get_name_test()
   return ret_node;
 }
 
-//Example node graph2
+// Example node graph2
 knowledge_graph_msgs::msg::Node get_name_test2()
 {
   knowledge_graph_msgs::msg::Node ret_node;
@@ -74,7 +73,6 @@ void readMyGraph()
   } else {
     std::cout << "Inside my graph there are the nodes:" << std::endl;
     for (size_t i = 0; i < server_node->getKnowledgeGraph()->get_node_names().size(); i++) {
-
       std::cout << node_names.at(i) << std::endl;
     }
   }
@@ -97,12 +95,11 @@ void readMyProperties(const knowledge_graph_msgs::msg::Node & name_node)
     } else {
       std::cout << "This node do not exists" << std::endl;
     }
-
   }
 }
 
 
-//Spin the service
+// Spin the service
 void spin_node(std::shared_ptr<KnowledgeGraphServer> server_node)
 {
   rclcpp::Rate rate(10);
@@ -113,33 +110,27 @@ void spin_node(std::shared_ptr<KnowledgeGraphServer> server_node)
     executor.spin_some();
     rate.sleep();
   }
-  //delete de executor
+// delete de executor
   executor.cancel();
   executor.remove_node(server_node);
-
-
 }
 
 
-//Create 1 node
+// Create 1 node
 TEST(MyTest, oneNode) {
   running = true;
   auto thread = std::thread(spin_node, server_node);
   client_node = std::make_shared<KnowledgeGraphClient>();
 
-  //Add node name
+  // Add node name
   bool flag;
   flag = client_node->createNode(get_name_test());
   ASSERT_EQ(flag, true);
 
-  //ASSERT_EQ(flag,false);
-
-  //Show service
-
-  //stop during 1s
+  // stop during 1s
   std::this_thread::sleep_for(1s);
 
-  //Response received
+  // Response received
   client_node.reset();
   running = false;
   thread.join();
@@ -149,7 +140,7 @@ TEST(MyTest, oneNode) {
   std::cout << "exiting" << std::endl;
 }
 
-//Create an edge
+// Create an edge
 TEST(MyTest, twonodes) {
   running = true;
   auto thread = std::thread(spin_node, server_node);
@@ -171,7 +162,7 @@ TEST(MyTest, twonodes) {
   flag_edge_1 = client_node->createEdge(get_edge_test1());
   ASSERT_EQ(flag_edge_1, true);
 
-  //stop during 1s
+  // stop during 1s
   std::this_thread::sleep_for(1s);
 
   std::vector<knowledge_graph_msgs::msg::Edge> edge_name;
@@ -185,7 +176,7 @@ TEST(MyTest, twonodes) {
   }
 
 
-  //Response received
+  // Response received
 
   running = false;
   thread.join();
@@ -195,7 +186,7 @@ TEST(MyTest, twonodes) {
   std::cout << "exiting" << std::endl;
 }
 
-//Delete a node
+// Delete a node
 TEST(MyTest, deleteNode) {
   running = true;
   auto thread = std::thread(spin_node, server_node);
@@ -207,14 +198,13 @@ TEST(MyTest, deleteNode) {
   flag_delete_1 = client_node->removeNode(get_name_test());
   ASSERT_EQ(flag_delete_1, true);
   readMyGraph();
-  //Response received
+  // Response received
 
   running = false;
   thread.join();
   std::cout << "Server killed" << std::endl;
   std::this_thread::sleep_for(1s);
   std::cout << "exiting" << std::endl;
-
 }
 
 // Test create a property
@@ -224,20 +214,20 @@ TEST(MyTest, oneNodeProperty) {
   client_node = std::make_shared<KnowledgeGraphClient>();
 
 
-  //Add node property
+  // Add node property
 
-  bool flag, flag_name;
+  bool flag;
   auto node = get_node_property();
-  flag_name = client_node->createNode(node);
+  client_node->createNode(node);
   flag = client_node->addPropertyNode(node);
   readMyProperties(node);
   ASSERT_EQ(flag, true);
 
 
-  //stop during 1s
+  // stop during 1s
   std::this_thread::sleep_for(1s);
 
-  //Response received
+  // Response received
   client_node.reset();
   running = false;
   thread.join();
@@ -250,11 +240,10 @@ TEST(MyTest, oneNodeProperty) {
 
 int main(int argc, char * argv[])
 {
-
   ::testing::InitGoogleTest(&argc, argv);
   rclcpp::init(argc, argv);
 
-  //add node before de init
+  // Add node before de init
   server_node = std::make_shared<KnowledgeGraphServer>();
 
 
@@ -262,11 +251,11 @@ int main(int argc, char * argv[])
   readMyGraph();
 
   std::cout << "delete nodes" << std::endl;
-  //delete the node
+  // Delete the node
   client_node.reset();
   // client_edge.reset();
   server_node.reset();
-  //server_node->shutdown();
+  // Server_node->shutdown();
 
   rclcpp::shutdown();
   return result;

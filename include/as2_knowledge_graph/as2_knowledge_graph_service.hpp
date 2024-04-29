@@ -114,11 +114,6 @@ protected:
   rclcpp::Service<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>::SharedPtr
     service_read_edge_source_target_graph_;
 
-
-  bool request_name_received;
-  bool request_edge_received;
-  bool request_remove_node_received;
-  bool request_remove_edge_received;
   size_t count_;
 
   std::optional<knowledge_graph_msgs::msg::Node> get_node_from_class(
