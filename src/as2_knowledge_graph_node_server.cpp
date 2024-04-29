@@ -6,6 +6,19 @@
 void KnowledgeGraphServer::timerCallback()
 {
 }
+std::optional<knowledge_graph_msgs::msg::Node> KnowledgeGraphServer::get_node_from_class(
+  const std::string node_class)
+{
+  for (auto it:KnowledgeGraphServer::getKnowledgeGraph()->get_nodes()) {
+    knowledge_graph_msgs::msg::Node ret;
+    ret.node_class = it.node_class;
+    if (ret.node_class == node_class) {
+      return ret = it;
+    }
+  }
+  return {};
+}
+
 
 void KnowledgeGraphServer::createNode(
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Request> request,
@@ -108,7 +121,6 @@ void KnowledgeGraphServer::addPropertyEdge(
   }
   RCLCPP_INFO(this->get_logger(), "Edge property service");
 }
-
 void KnowledgeGraphServer::readGraph(
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Request> request,
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Response> response)
@@ -125,3 +137,91 @@ void KnowledgeGraphServer::readGraph(
   }
 
 }
+
+void KnowledgeGraphServer::readNodeGraph(
+  const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Request> request,
+  const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Response> response)
+{
+  if (KnowledgeGraphServer::getKnowledgeGraph()->get_nodes().empty()) {
+    RCLCPP_INFO(this->get_logger(), "the graph is empty");
+  } else {
+    std::optional<knowledge_graph_msgs::msg::Node> node;
+    node = get_node_from_class(request->node_class);
+    if (node) {
+      response->nodes.emplace_back(node.value());
+      for (auto & it:response->nodes) {
+        RCLCPP_INFO(this->get_logger(), "the node name is: %s", it.node_name.c_str());
+      }
+    }
+  }
+}
+
+void KnowledgeGraphServer::readEdgeClassGraph(
+  const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Request> request,
+  const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Response> response)
+{
+  if (KnowledgeGraphServer::getKnowledgeGraph()->get_edges(
+      request->source_node,
+      request->target_node).empty())
+  {
+    RCLCPP_INFO(this->get_logger(), "the edge does not exist");
+  } else {
+    for (auto & the_class:
+      KnowledgeGraphServer::getKnowledgeGraph()->get_edges(
+        request->source_node,
+        request->target_node))
+    {
+      knowledge_graph_msgs::msg::Edge edge;
+      edge.edge_class = the_class.edge_class;
+      response->edge.emplace_back(edge);
+    }
+  }
+}
+
+void KnowledgeGraphServer::readEdgeSourceTargetGraph(
+  const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Request> request,
+  const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Response> response)
+{
+  if (KnowledgeGraphServer::getKnowledgeGraph()->get_edges(
+      request->edge_class).empty())
+  {
+    RCLCPP_INFO(this->get_logger(), "the edge class does not exist");
+  } else {
+    for (auto & the_class:
+      KnowledgeGraphServer::getKnowledgeGraph()->get_edges(
+        request->edge_class))
+    {
+      knowledge_graph_msgs::msg::Edge edge;
+      edge.source_node = the_class.source_node;
+      edge.target_node = the_class.target_node;
+      response->edge.emplace_back(edge);
+    }
+  }
+}
+
+//la idea es que le pase una clase y me diga todos los nodos de esa clase, y si no existe, que me diga todos los nodos que hay en el grafo
+// void KnowledgeGraphServer::readGraph(
+//   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Request> request,
+//   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Response> response)
+// {
+//   if (KnowledgeGraphServer::getKnowledgeGraph()->get_node_names().empty()) {
+//     RCLCPP_INFO(this->get_logger(), "the graph is empty");
+//   } else {
+//     // for (auto & name:KnowledgeGraphServer::getKnowledgeGraph()->get_node_names()) {
+//     knowledge_graph_msgs::msg::Node node;
+//     //node.node_name =;
+//     //esto esta mal, tengo que ver como hacer para pasarles los nodos de mi grafo para poder sacarles la clase
+//     // node.node_class = get_node_class(node);
+
+//     // if (std::string(name) == request->node_class) {
+//     // } else {
+//     //   RCLCPP_INFO(this->get_logger(), "Inside the graph there are the nodes:");
+//     //   for (auto & node_names:KnowledgeGraphServer::getKnowledgeGraph()->get_node_names()) {
+//     //     knowledge_graph_msgs::msg::Node node;
+//     //     node.node_name = node_names;
+//     //     response->nodes.emplace_back(node);
+//     //   }
+//     //}
+//     //}
+//   }
+// }

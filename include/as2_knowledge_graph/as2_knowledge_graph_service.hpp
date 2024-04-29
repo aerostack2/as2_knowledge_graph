@@ -10,6 +10,7 @@
 #include "as2_knowledge_graph_msgs/srv/create_node.hpp"
 #include "as2_knowledge_graph_msgs/srv/create_edge.hpp"
 #include "as2_knowledge_graph_msgs/srv/read_graph.hpp"
+#include "as2_knowledge_graph_msgs/srv/read_edge_graph.hpp"
 #include "knowledge_graph/graph_utils.hpp"
 #include "knowledge_graph/knowledge_graph.hpp"
 #include "knowledge_graph_msgs/msg/content.hpp"
@@ -18,7 +19,6 @@
 #include "knowledge_graph_msgs/msg/graph_update.hpp"
 #include "knowledge_graph_msgs/msg/node.hpp"
 #include "knowledge_graph_msgs/msg/property.hpp"
-
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -49,6 +49,15 @@ public:
 
     service_read_graph_ = this->create_service<as2_knowledge_graph_msgs::srv::ReadGraph>(
       "read_graph", std::bind(&KnowledgeGraphServer::readGraph, this, _1, _2));
+    service_read_node_graph_ = this->create_service<as2_knowledge_graph_msgs::srv::ReadGraph>(
+      "read_node_graph", std::bind(&KnowledgeGraphServer::readNodeGraph, this, _1, _2));
+    service_read_edge_class_graph_ =
+      this->create_service<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>(
+      "read_edge_class_graph", std::bind(&KnowledgeGraphServer::readEdgeClassGraph, this, _1, _2));
+    service_read_edge_source_target_graph_ =
+      this->create_service<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>(
+      "read_edge_source_target_graph",
+      std::bind(&KnowledgeGraphServer::readEdgeSourceTargetGraph, this, _1, _2));
 
     timer_ = this->create_wall_timer(20ms, std::bind(&KnowledgeGraphServer::timerCallback, this));
 
@@ -71,6 +80,9 @@ public:
     add_property_node_.reset();
     add_property_edge_.reset();
     service_read_graph_.reset();
+    service_read_node_graph_.reset();
+    service_read_edge_class_graph_.reset();
+    service_read_edge_source_target_graph_.reset();
     knowledge_graph_ptr_.reset();
     timer_.reset();
   }
@@ -96,6 +108,11 @@ protected:
   rclcpp::Service<as2_knowledge_graph_msgs::srv::CreateEdge>::SharedPtr service_remove_edge_;
   rclcpp::Service<as2_knowledge_graph_msgs::srv::CreateNode>::SharedPtr add_property_node_;
   rclcpp::Service<as2_knowledge_graph_msgs::srv::ReadGraph>::SharedPtr service_read_graph_;
+  rclcpp::Service<as2_knowledge_graph_msgs::srv::ReadGraph>::SharedPtr service_read_node_graph_;
+  rclcpp::Service<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>::SharedPtr
+    service_read_edge_class_graph_;
+  rclcpp::Service<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>::SharedPtr
+    service_read_edge_source_target_graph_;
 
 
   bool request_name_received;
@@ -103,6 +120,9 @@ protected:
   bool request_remove_node_received;
   bool request_remove_edge_received;
   size_t count_;
+
+  std::optional<knowledge_graph_msgs::msg::Node> get_node_from_class(
+    const std::string node_class);
 
   void createNode(
     const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Request> request,
@@ -126,6 +146,15 @@ protected:
   void readGraph(
     const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Request> request,
     const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Response> response);
+  void readNodeGraph(
+    const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Request> request,
+    const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Response> response);
+  void readEdgeClassGraph(
+    const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Request> request,
+    const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Response> response);
+  void readEdgeSourceTargetGraph(
+    const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Request> request,
+    const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Response> response);
 };
 
 #endif

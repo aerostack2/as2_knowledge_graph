@@ -22,4 +22,5 @@
 knowledge_graph_msgs::msg::Content whichType(const knowledge_graph_msgs::msg::Property & prop);
 int whichType2(const knowledge_graph_msgs::msg::Property & prop);
 
+
 #endif
