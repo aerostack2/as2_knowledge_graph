@@ -108,6 +108,11 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   set(ament_cmake_copyright_FOUND TRUE)
   set(ament_cmake_cpplint_FOUND TRUE)
+  file(GLOB_RECURSE EXCLUDE_FILES
+    build/*
+    install/*
+  )
+  set(AMENT_LINT_AUTO_FILE_EXCLUDE ${EXCLUDE_FILES})
   ament_lint_auto_find_test_dependencies()
   add_subdirectory(tests)
 endif()

@@ -62,6 +62,17 @@ knowledge_graph_msgs::msg::Node get_node_property()
   return ret_node;
 }
 
+// Example propety edge
+knowledge_graph_msgs::msg::Edge get_edge_property()
+{
+  knowledge_graph_msgs::msg::Edge ret_edge;
+  ret_edge.edge_class = "mayor";
+  ret_edge.source_node = "Sara";
+  ret_edge.target_node = "Ana";
+  knowledge_graph::add_property(ret_edge.properties, "diferencia de edad", std::string("13 años"));
+  return ret_edge;
+}
+
 // Access to my graph nodes
 void readMyGraph()
 {
@@ -84,7 +95,7 @@ void readMyProperties(const knowledge_graph_msgs::msg::Node & name_node)
   node = name_node;
   for (auto & node_name : server_node->getKnowledgeGraph()->get_node_names()) {
     if (node.node_name == node_name) {
-      std::cout << "The node " << node_name << "has the properties: " << std::endl;
+      std::cout << "The node " << node_name << " has the properties: " << std::endl;
 
       for (auto & prop : node.properties) {
         std::cout <<
@@ -235,6 +246,27 @@ TEST(MyTest, oneNodeProperty) {
 
   std::this_thread::sleep_for(1s);
   std::cout << "exiting" << std::endl;
+}
+// Test create an edge property
+TEST(MyTest, oneEdgeProperty) {
+  // running = true;
+  // auto thread = std::thread(spin_node, server_node);
+  // client_node = std::make_shared<KnowledgeGraphClient>();
+  // bool flag;
+  // auto edge = get_edge_property();
+  // client_node->createEdge(edge);
+  // flag = client_node->addPropertyEdge(edge);
+  // //client_node->readEdgeClassGraph(edge.source_node, edge.target_node);
+  // //client_node->readEdgeSourceTargetGraph(edge);
+  // //ASSERT_EQ(flag, true);
+  // std::this_thread::sleep_for(1s);
+  // client_node.reset();
+  // running = false;
+  // thread.join();
+  // std::cout << "Server killed" << std::endl;
+
+  // std::this_thread::sleep_for(1s);
+  // std::cout << "exiting" << std::endl;
 }
 
 

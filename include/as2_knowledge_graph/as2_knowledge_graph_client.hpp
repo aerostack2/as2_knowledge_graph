@@ -48,6 +48,9 @@ public:
     client_read_edge_source_target_graph_ =
       this->create_client<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>(
       "read_edge_source_target_graph");
+    service_read_node_property_graph_ =
+      this->create_client<as2_knowledge_graph_msgs::srv::ReadGraph>(
+      "read_node_property_graph");
 
     timer_ = this->create_wall_timer(20ms, std::bind(&KnowledgeGraphClient::timerCallback, this));
   }
@@ -73,21 +76,24 @@ public:
     client_read_edge_class_graph_;
   rclcpp::Client<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>::SharedPtr
     client_read_edge_source_target_graph_;
+  rclcpp::Client<as2_knowledge_graph_msgs::srv::ReadGraph>::SharedPtr
+    service_read_node_property_graph_;
 
   void timerCallback();
   bool createNode(const knowledge_graph_msgs::msg::Node & client_);
   bool createEdge(const knowledge_graph_msgs::msg::Edge & client_);
   bool removeNode(const knowledge_graph_msgs::msg::Node & client_);
   bool removeEdge(const knowledge_graph_msgs::msg::Edge & client_);
-  bool addPropertyNode(const knowledge_graph_msgs::msg::Node & client_);
-  void addPropertyEdge();
+  bool addPropertyNode(
+    const knowledge_graph_msgs::msg::Node & client_);
+  bool addPropertyEdge(const knowledge_graph_msgs::msg::Edge & client_);
   bool readGraph(const std::string & node_name_client_);
   bool readGraph();
   bool readNodeGraph(const std::string & node_class_client_);
   bool readEdgeClassGraph(
     const knowledge_graph_msgs::msg::Node & source_client_,
     const knowledge_graph_msgs::msg::Node & target_client_);
-  bool readEdgeSourceTargetGraph();
+  bool readEdgeSourceTargetGraph(const std::string & edge_class_client_);
 
 };
 

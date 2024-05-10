@@ -107,7 +107,6 @@ bool KnowledgeGraphClient::createEdge(const knowledge_graph_msgs::msg::Edge & cl
 // Synchronous delete Node
 bool KnowledgeGraphClient::removeNode(const knowledge_graph_msgs::msg::Node & client_)
 {
-  RCLCPP_INFO(this->get_logger(), "Deleting node name");
   auto set_cli = as2::SynchronousServiceClient<as2_knowledge_graph_msgs::srv::CreateNode>(
     "remove_node", this);
   // Set request
@@ -141,7 +140,6 @@ bool KnowledgeGraphClient::removeNode(const knowledge_graph_msgs::msg::Node & cl
 // Syncronous removeEdge
 bool KnowledgeGraphClient::removeEdge(const knowledge_graph_msgs::msg::Edge & client_)
 {
-  RCLCPP_INFO(this->get_logger(), "Deleting edge");
   auto set_cli = as2::SynchronousServiceClient<as2_knowledge_graph_msgs::srv::CreateEdge>(
     "remove_edge", this);
   // Set request
@@ -172,7 +170,8 @@ bool KnowledgeGraphClient::removeEdge(const knowledge_graph_msgs::msg::Edge & cl
 // };
 
 // Synchronous addProperty
-bool KnowledgeGraphClient::addPropertyNode(const knowledge_graph_msgs::msg::Node & client_)
+bool KnowledgeGraphClient::addPropertyNode(
+  const knowledge_graph_msgs::msg::Node & client_)
 {
   auto set_cli = as2::SynchronousServiceClient<as2_knowledge_graph_msgs::srv::CreateNode>(
     "add_property_node", this);
@@ -180,10 +179,34 @@ bool KnowledgeGraphClient::addPropertyNode(const knowledge_graph_msgs::msg::Node
   auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Request>();
   auto response = std::make_shared<as2_knowledge_graph_msgs::srv::CreateNode::Response>();
   request->node = client_;
+
+  bool out = set_cli.sendRequest(request, response);
+  if (out && response) {
+    for (auto & prop : client_.properties) {
+      RCLCPP_INFO(
+        this->get_logger(), "The node %s request to add the property with the key: %s and the content %s:",
+        request->node.node_name.c_str(), prop.key.c_str(), knowledge_graph::to_string(
+          prop.value).c_str());
+
+    }
+    return true;
+  } else {
+    RCLCPP_INFO(this->get_logger(), "it was not able to add the property");
+    return false;
+  }
+}
+
+bool KnowledgeGraphClient::addPropertyEdge(const knowledge_graph_msgs::msg::Edge & client_)
+{
+  auto set_cli = as2::SynchronousServiceClient<as2_knowledge_graph_msgs::srv::CreateEdge>(
+    "add_property_edge", this);
+  auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateEdge::Request>();
+  auto response = std::make_shared<as2_knowledge_graph_msgs::srv::CreateEdge::Response>();
+  request->edge = client_;
   bool out = set_cli.sendRequest(request, response);
   RCLCPP_INFO(
-    this->get_logger(), "The node %s request to add the property ",
-    request->node.node_name.c_str());
+    this->get_logger(), "The edge %s request to add a property ",
+    request->edge.edge_class.c_str());
   if (out && response) {
     for (auto & prop : client_.properties) {
       RCLCPP_INFO(this->get_logger(), "the propety with the key: %s", prop.key.c_str());
@@ -195,17 +218,6 @@ bool KnowledgeGraphClient::addPropertyNode(const knowledge_graph_msgs::msg::Node
   } else {
     RCLCPP_INFO(this->get_logger(), "it was not able to add the property");
     return false;
-  }
-}
-
-void KnowledgeGraphClient::addPropertyEdge()
-{
-  auto request = std::make_shared<as2_knowledge_graph_msgs::srv::CreateEdge::Request>();
-  auto result = client_add_property_edge_->async_send_request(request);
-  for (size_t i = 0; i < request->edge.properties.size(); i++) {
-    RCLCPP_INFO(
-      this->get_logger(), "Add property: %d", request->edge.properties.at(
-        i).value.int_value);
   }
 }
 
@@ -252,11 +264,13 @@ bool KnowledgeGraphClient::readNodeGraph(const std::string & node_class_client_)
     "read_node_graph", this);
   auto request = std::make_shared<as2_knowledge_graph_msgs::srv::ReadGraph::Request>();
   auto response = std::make_shared<as2_knowledge_graph_msgs::srv::ReadGraph::Response>();
-  request->node_name = node_class_client_;
+  request->node_class = node_class_client_;
   bool out = set_cli.sendRequest(request, response);
   if (out && response) {
     for (auto & nodes : response->nodes) {
-      RCLCPP_INFO(this->get_logger(), nodes.node_name.c_str());
+      RCLCPP_INFO(
+        this->get_logger(), "The node %s is of type %s",
+        nodes.node_name.c_str(), node_class_client_.c_str());
     }
     return true;
   } else {
@@ -280,8 +294,28 @@ bool KnowledgeGraphClient::readEdgeClassGraph(
     for (auto & edges : response->edge) {
       RCLCPP_INFO(
         this->get_logger(), "There is the edge %s between %s and %s",
-        edges.edge_class.c_str(), edges.source_node.c_str(), edges.target_node.c_str());
-
+        edges.edge_class.c_str(), request->source_node.c_str(), request->target_node.c_str());
+    }
+    return true;
+  } else {
+    RCLCPP_INFO(this->get_logger(), "The client fail");
+    return false;
+  }
+}
+bool KnowledgeGraphClient::readEdgeSourceTargetGraph(
+  const std::string & edge_class_client_)
+{
+  auto set_cli = as2::SynchronousServiceClient<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>(
+    "read_edge_source_target_graph", this);
+  auto request = std::make_shared<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Request>();
+  auto response = std::make_shared<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Response>();
+  request->edge_class = edge_class_client_;
+  bool out = set_cli.sendRequest(request, response);
+  if (out && response) {
+    for (auto & edges : response->edge) {
+      RCLCPP_INFO(
+        this->get_logger(), "The edge of class %s exists between %s and %s",
+        edge_class_client_.c_str(), edges.source_node.c_str(), edges.target_node.c_str());
     }
     return true;
   } else {
