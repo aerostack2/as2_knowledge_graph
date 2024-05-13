@@ -1,6 +1,5 @@
 #include "as2_knowledge_graph_service.hpp"
 #include "as2_knowledge_graph_client.hpp"
-#include "utils/as2_knowledge_graph_graph_utils.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 

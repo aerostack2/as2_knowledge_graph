@@ -1,7 +1,6 @@
 #include "as2_knowledge_graph_service.hpp"
 #include <memory>
 #include <rclcpp/node.hpp>
-#include "utils/as2_knowledge_graph_graph_utils.hpp"
 
 void KnowledgeGraphServer::timerCallback()
 {

@@ -9,7 +9,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 #Find dependencies
-set (PROJECT_DEPENDENCIES
+set(PROJECT_DEPENDENCIES
   ament_cmake
   rclcpp
   backward_ros
@@ -22,11 +22,9 @@ set (PROJECT_DEPENDENCIES
 )
 
 set(SUBPROJECT_NAME
-      as2_knowledge_graph_service_client_main
-      as2_knowledge_graph_node_server_main
-      )
-
-
+  as2_knowledge_graph_service_client_main
+  as2_knowledge_graph_node_server_main
+)
 
 foreach(DEPENDENCY ${PROJECT_DEPENDENCIES})
   find_package(${DEPENDENCY} REQUIRED)
@@ -37,19 +35,18 @@ include_directories(
   include
   include/${PROJECT_NAME}
   include/${SUBPROJECT_NAME}
-  
 )
 
 set(SOURCE_CPP_FILES
-    src/${SUBPROJECT_NAME}.cpp 
-    )
+  src/${SUBPROJECT_NAME}.cpp
+)
 
 
 
 ament_export_dependencies(rosidl_default_runtime)
 
 # Library
-add_library(${PROJECT_NAME} SHARED src/as2_knowledge_graph_service_client.cpp src/as2_knowledge_graph_node_server.cpp src/graph_utils.cpp)
+add_library(${PROJECT_NAME} SHARED src/as2_knowledge_graph_service_client.cpp src/as2_knowledge_graph_node_server.cpp)
 # Include headers in the library
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -61,11 +58,11 @@ ament_target_dependencies(${PROJECT_NAME} ${PROJECT_DEPENDENCIES})
 
 add_executable(as2_knowledge_graph_node_server_main src/as2_knowledge_graph_node_server_main.cpp)
 ament_target_dependencies(as2_knowledge_graph_node_server_main ${PROJECT_DEPENDENCIES})
-target_link_libraries(as2_knowledge_graph_node_server_main  ${PROJECT_NAME} )
+target_link_libraries(as2_knowledge_graph_node_server_main  ${PROJECT_NAME})
 
 add_executable(as2_knowledge_graph_service_client_main src/as2_knowledge_graph_service_client_main.cpp)
 ament_target_dependencies(as2_knowledge_graph_service_client_main  ${PROJECT_DEPENDENCIES})
-target_link_libraries(as2_knowledge_graph_service_client_main ${PROJECT_NAME} )
+target_link_libraries(as2_knowledge_graph_service_client_main ${PROJECT_NAME})
 
 
 #Install
@@ -77,10 +74,10 @@ install(DIRECTORY
   launch
   DESTINATION share/${PROJECT_NAME})
 
-install(  TARGETS 
+install(TARGETS
   ${SUBPROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
-  )
+)
 
 ament_export_include_directories(
   include
@@ -98,8 +95,8 @@ ament_export_targets(
 install(
   TARGETS ${PROJECT_NAME}
   EXPORT export_${PROJECT_NAME}
-  ARCHIVE DESTINATION lib 
-  LIBRARY DESTINATION lib 
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 

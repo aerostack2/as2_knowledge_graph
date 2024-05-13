@@ -1,9 +1,9 @@
-"""launch as2_knowledge_graph node"""
+"""Launch as2_knowledge_graph node."""
 from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, EnvironmentVariable, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, EnvironmentVariable
 from launch import LaunchDescription
+
 
 def generate_launch_description():
     return LaunchDescription([
