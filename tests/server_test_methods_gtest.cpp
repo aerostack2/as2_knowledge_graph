@@ -92,7 +92,7 @@ TEST(MyTest, oneNode) {
   client_node = std::make_shared<KnowledgeGraphClient>();
 
   bool flag_1, flag_2, flag_3, flag_4, flag_5, flag_6, flag_7, flag_8, flag_9, flag_10, flag_11,
-    flag_12, flag_13, flag_14;
+    flag_12, flag_13, flag_14, flag_15, flag_16;
 
   flag_1 = client_node->createNode(get_name_test1());
   EXPECT_EQ(flag_1, true);
@@ -150,6 +150,17 @@ TEST(MyTest, oneNode) {
   flag_4 = client_node->readGraph("Paco");
   EXPECT_EQ(flag_4, true);
   std::this_thread::sleep_for(1s);
+
+  // Read node properties
+  flag_15 = client_node->readNodePropertyGraph("Paco");
+  EXPECT_EQ(flag_15, true);
+  std::this_thread::sleep_for(1s);
+
+  // Read edge properties
+  flag_16 = client_node->readEdgePropertyGraph("son familia");
+  EXPECT_EQ(flag_16, true);
+  std::this_thread::sleep_for(1s);
+
 
   // Remove the edge
   flag_9 = client_node->removeEdge(get_edge_test1(get_name_test1(), get_name_test2()));

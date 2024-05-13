@@ -323,3 +323,44 @@ bool KnowledgeGraphClient::readEdgeSourceTargetGraph(
     return false;
   }
 }
+bool KnowledgeGraphClient::readNodePropertyGraph(const std::string & node_name_client_)
+{
+  auto set_cli = as2::SynchronousServiceClient<as2_knowledge_graph_msgs::srv::ReadProperty>(
+    "read_node_property_graph", this);
+  auto request = std::make_shared<as2_knowledge_graph_msgs::srv::ReadProperty::Request>();
+  auto response = std::make_shared<as2_knowledge_graph_msgs::srv::ReadProperty::Response>();
+  request->node_name = node_name_client_;
+  bool out = set_cli.sendRequest(request, response);
+  if (!(out && response)) {
+    RCLCPP_INFO(this->get_logger(), "The client fail");
+    return false;
+  }
+  for (auto & prop : response->properties) {
+    RCLCPP_INFO(
+      this->get_logger(), "The node %s has the property %s with the key %s",
+      node_name_client_.c_str(), knowledge_graph::to_string(
+        prop.value).c_str(), prop.key.c_str());
+  }
+  return true;
+}
+
+bool KnowledgeGraphClient::readEdgePropertyGraph(const std::string & edge_class_client_)
+{
+  auto set_cli = as2::SynchronousServiceClient<as2_knowledge_graph_msgs::srv::ReadProperty>(
+    "read_edge_property_graph", this);
+  auto request = std::make_shared<as2_knowledge_graph_msgs::srv::ReadProperty::Request>();
+  auto response = std::make_shared<as2_knowledge_graph_msgs::srv::ReadProperty::Response>();
+  request->edge_class = edge_class_client_;
+  bool out = set_cli.sendRequest(request, response);
+  if (!(out && response)) {
+    RCLCPP_INFO(this->get_logger(), "The client fail");
+    return false;
+  }
+  for (auto & prop : response->properties) {
+    RCLCPP_INFO(
+      this->get_logger(), "The edge %s has the property %s with the key %s",
+      edge_class_client_.c_str(), knowledge_graph::to_string(
+        prop.value).c_str(), prop.key.c_str());
+  }
+  return true;
+}
