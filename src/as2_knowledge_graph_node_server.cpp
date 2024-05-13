@@ -86,30 +86,20 @@ void KnowledgeGraphServer::addPropertyNode(
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Response> response)
 {
   RCLCPP_INFO(this->get_logger(), "Adding a node property service");
-  if (KnowledgeGraphServer::getKnowledgeGraph()->exist_node(request->node.node_name)) {
-
-
-    std::optional<knowledge_graph_msgs::msg::Node> my_node;
-    my_node = KnowledgeGraphServer::getKnowledgeGraph()->get_node(request->node.node_name);
-
-    // if (knowledge_graph::add_property(my_node.value(), "edad", 15)) {
-    //   std::cout << "ok" << std::endl;
-    // }
-    for (auto & property : my_node.value().properties) {
-      if (knowledge_graph::add_property(
-          my_node.value(), std::string(property.key),
-          property.value))
-      {
-        RCLCPP_INFO(this->get_logger(), "the key: %s", property.key.c_str());
-        RCLCPP_INFO(
-          this->get_logger(), "the content: %s",
-          knowledge_graph::to_string(property.value).c_str());
-        response->resultado = 1;
-      } else {
-        RCLCPP_INFO(this->get_logger(), "The service fail");
-      }
-    }
+  std::optional<knowledge_graph_msgs::msg::Node> my_node;
+  // knowledge_graph_ptr_->update_node(request->node);
+  my_node = knowledge_graph_ptr_->get_node(request->node.node_name);
+  if (!my_node.has_value()) {
+    response->resultado = false;
+    RCLCPP_INFO(this->get_logger(), "The node %s does not exist", request->node.node_name.c_str());
   }
+  knowledge_graph_msgs::msg::Node & new_node = request->node;
+  if (!knowledge_graph::add_property(my_node.value(), new_node.properties)) {
+    RCLCPP_INFO(this->get_logger(), "The service fail");
+    response->resultado = false;
+  }
+  RCLCPP_INFO(this->get_logger(), "correctly update de properties");
+  response->resultado = true;
 }
 
 
@@ -117,19 +107,25 @@ void KnowledgeGraphServer::addPropertyEdge(
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Request> request,
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateEdge::Response> response)
 {
-  RCLCPP_INFO(this->get_logger(), "Adding a edge property service");
-  knowledge_graph_msgs::msg::Edge my_edge;
-  my_edge = request->edge;
-  for (auto & property : my_edge.properties) {
-    if (knowledge_graph::add_property(my_edge, property.key, property.value) == true) {
-      response->resultado = 1;
-      RCLCPP_INFO(this->get_logger(), "ok");
-    } else {
-      RCLCPP_INFO(this->get_logger(), "no ok");
-    }
+  RCLCPP_INFO(this->get_logger(), "Adding an edge property service");
+  std::vector<knowledge_graph_msgs::msg::Edge> old_my_edge;
+  old_my_edge = knowledge_graph_ptr_->get_edges(request->edge.edge_class);
+  if (old_my_edge.empty()) {
+    response->resultado = false;
+    RCLCPP_INFO(this->get_logger(), "The edge %s does not exist", request->edge.edge_class.c_str());
   }
-  RCLCPP_INFO(this->get_logger(), "Edge property service");
+  for (auto & edge : old_my_edge) {
+    // edge = request->edge;
+    if (!knowledge_graph::add_property(edge, edge.properties)) {
+      RCLCPP_INFO(this->get_logger(), "The service fail");
+      response->resultado = false;
+    }
+    RCLCPP_INFO(this->get_logger(), "correctly update de properties");
+    response->resultado = true;
+  }
 }
+
+
 void KnowledgeGraphServer::readGraph(
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Request> request,
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Response> response)
@@ -149,7 +145,6 @@ void KnowledgeGraphServer::readGraph(
         knowledge_graph_msgs::msg::Node node;
         node.node_name = node_names;
         response->nodes.emplace_back(node);
-
       }
     }
   }
@@ -212,14 +207,21 @@ void KnowledgeGraphServer::readEdgeSourceTargetGraph(
     }
   }
 }
-void KnowledgeGraphServer::readNodePropertyGraph(
-  const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Request> request,
-  const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Response> response)
-{
-//   if (KnowledgeGraphServer::getKnowledgeGraph()->exist_node(request->node_name)) {
-//     knowledge_graph_msgs::msg::Node the_node;
-//     the_node = KnowledgeGraphServer::getKnowledgeGraph()->get_node(request->node_name);
-// response->nodes.
+// void KnowledgeGraphServer::readNodePropertyGraph(
+//   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadProperty::Request> request,
+//   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadProperty::Response> response)
+// {
 
-//   }
-}
+//   // RCLCPP_INFO(this->get_logger(), "Access to the graph service");
+//   // if (KnowledgeGraphServer::getKnowledgeGraph()->get_nodes().empty()) {
+//   //   RCLCPP_INFO(this->get_logger(), "the graph is empty");
+//   // } else {
+//   //   if (KnowledgeGraphServer::getKnowledgeGraph()->exist_node(request->node_name)) {
+//   //     std::optional<knowledge_graph_msgs::msg::Node> node;
+//   //     node = KnowledgeGraphServer::getKnowledgeGraph()->get_node(request->node_name);
+//   //     response->properties.emplace_back(node.value().properties);
+//   //   }
+//   //   RCLCPP_INFO(
+//   //     this->get_logger(), "the node %s does not belong to this graph", request->node_name.c_str());
+//   // }
+// }

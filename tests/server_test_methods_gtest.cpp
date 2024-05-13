@@ -82,7 +82,7 @@ knowledge_graph_msgs::msg::Edge get_edge_property1(knowledge_graph_msgs::msg::Ed
 {
   knowledge_graph_msgs::msg::Edge ret_edge;
   ret_edge = edge;
-  knowledge_graph::add_property(ret_edge, "relacion", std::string("padre e hijo"));
+  knowledge_graph::add_property(ret_edge, "son familia", std::string("padre e hijo"));
   return ret_edge;
 }
 

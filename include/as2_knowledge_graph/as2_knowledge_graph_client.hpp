@@ -7,6 +7,7 @@
 #include "as2_knowledge_graph_msgs/srv/create_node.hpp"
 #include "as2_knowledge_graph_msgs/srv/read_graph.hpp"
 #include "as2_knowledge_graph_msgs/srv/read_edge_graph.hpp"
+// #include "as2_knowledge_graph_msgs/srv/read_property.hpp"
 #include "knowledge_graph/knowledge_graph.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include <cstdlib>
@@ -48,9 +49,9 @@ public:
     client_read_edge_source_target_graph_ =
       this->create_client<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>(
       "read_edge_source_target_graph");
-    service_read_node_property_graph_ =
-      this->create_client<as2_knowledge_graph_msgs::srv::ReadGraph>(
-      "read_node_property_graph");
+    // service_read_node_property_graph_ =
+    //   this->create_client<as2_knowledge_graph_msgs::srv::ReadProperty>(
+    //   "read_node_property_graph");
 
     timer_ = this->create_wall_timer(20ms, std::bind(&KnowledgeGraphClient::timerCallback, this));
   }
@@ -76,8 +77,8 @@ public:
     client_read_edge_class_graph_;
   rclcpp::Client<as2_knowledge_graph_msgs::srv::ReadEdgeGraph>::SharedPtr
     client_read_edge_source_target_graph_;
-  rclcpp::Client<as2_knowledge_graph_msgs::srv::ReadGraph>::SharedPtr
-    service_read_node_property_graph_;
+  // rclcpp::Client<as2_knowledge_graph_msgs::srv::ReadProperty>::SharedPtr
+  //   service_read_node_property_graph_;
 
   void timerCallback();
   bool createNode(const knowledge_graph_msgs::msg::Node & client_);
@@ -94,7 +95,6 @@ public:
     const knowledge_graph_msgs::msg::Node & source_client_,
     const knowledge_graph_msgs::msg::Node & target_client_);
   bool readEdgeSourceTargetGraph(const std::string & edge_class_client_);
-
 };
 
 
