@@ -1,8 +1,8 @@
 """Launch as2_knowledge_graph node."""
-from launch_ros.actions import Node
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, EnvironmentVariable
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import EnvironmentVariable, LaunchConfiguration
+from launch_ros.actions import Node
 
 
 def generate_launch_description():
@@ -13,11 +13,11 @@ def generate_launch_description():
                               description='Drone namespace'),
 
         Node(
-            package="as2_knowledge_graph",
-            executable="as2_knowledge_graph_node_server_main",
-            name="knowledge_graph_server",
+            package='as2_knowledge_graph',
+            executable='as2_knowledge_graph_node_server_main',
+            name='knowledge_graph_server',
             namespace=LaunchConfiguration('namespace'),
-            output="screen",
+            output='screen',
             emulate_tty=True,
         )
     ])
