@@ -1,11 +1,39 @@
-#ifndef New_Node_hpp
-#define New_Node_hpp
+// Copyright 2024 Universidad Politécnica de Madrid
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//    * Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
+//
+//    * Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in the
+//      documentation and/or other materials provided with the distribution.
+//
+//    * Neither the name of the Universidad Politécnica de Madrid nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
 
+
+#ifndef AS2_KNOWLEDGE_GRAPH__AS2_KNOWLEDGE_GRAPH_SERVICE_HPP_
+#define AS2_KNOWLEDGE_GRAPH__AS2_KNOWLEDGE_GRAPH_SERVICE_HPP_
+
+#include <string>
 #include <memory>
 #include <optional>
 #include <rclcpp/node.hpp>
-#include <string>
-#include <vector>
 
 #include "as2_knowledge_graph_msgs/srv/create_node.hpp"
 #include "as2_knowledge_graph_msgs/srv/create_edge.hpp"
@@ -23,9 +51,10 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-using namespace std::chrono_literals;
+
 using std::placeholders::_1;
 using std::placeholders::_2;
+std::chrono::milliseconds twenty_ms(20);
 
 class KnowledgeGraphServer : public rclcpp::Node
 {
@@ -68,10 +97,13 @@ public:
       "read_edge_property_graph",
       std::bind(&KnowledgeGraphServer::readEdgePropertyGraph, this, _1, _2));
 
-    timer_ = this->create_wall_timer(20ms, std::bind(&KnowledgeGraphServer::timerCallback, this));
+    timer_ =
+      this->create_wall_timer(
+      twenty_ms,
+      std::bind(&KnowledgeGraphServer::timerCallback, this));
 
     static auto setup = this->create_wall_timer(
-      20ms, [this]() {
+      twenty_ms, [this]() {
         if (!knowledge_graph_ptr_) {
           knowledge_graph_ptr_ = std::make_shared<knowledge_graph::KnowledgeGraph>(
             static_cast<std::shared_ptr<rclcpp::Node>>(
@@ -81,7 +113,6 @@ public:
   }
   ~KnowledgeGraphServer()
   {
-
     service_create_node_.reset();
     service_create_edge_.reset();
     service_remove_node_.reset();
@@ -133,7 +164,6 @@ protected:
   std::optional<knowledge_graph_msgs::msg::Node> get_node_from_class(
     const std::string node_class);
 
-
   void createNode(
     const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Request> request,
     const std::shared_ptr<as2_knowledge_graph_msgs::srv::CreateNode::Response> response);
@@ -173,4 +203,5 @@ protected:
     const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadProperty::Response> response);
 };
 
-#endif
+
+#endif  // AS2_KNOWLEDGE_GRAPH__AS2_KNOWLEDGE_GRAPH_SERVICE_HPP_
