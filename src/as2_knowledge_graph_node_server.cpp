@@ -69,14 +69,18 @@ void KnowledgeGraphServer::createEdge(
 {
   RCLCPP_INFO(this->get_logger(), "service create edge");
   knowledge_graph_msgs::msg::Edge my_edge;
-  my_edge = request->edge;
+  my_edge.edge_class = request->edge.edge_class;
+  my_edge.source_node = request->edge.source_node;
+  my_edge.target_node = request->edge.target_node;
   if (this->knowledge_graph_ptr_->update_edge(my_edge, 1) == true) {
     response->resultado = true;
     RCLCPP_INFO(this->get_logger(), "successfully update the edge");
-    this->knowledge_graph_ptr_->get_edges(my_edge.source_node, my_edge.target_node);
-    this->knowledge_graph_ptr_->get_edges(my_edge.edge_class);
-    this->knowledge_graph_ptr_->get_out_edges(my_edge.source_node);
-    this->knowledge_graph_ptr_->get_in_edges(my_edge.target_node);
+
+    // Esto creo que es inecesario
+    // this->knowledge_graph_ptr_->get_edges(my_edge.source_node, my_edge.target_node);
+    // this->knowledge_graph_ptr_->get_edges(my_edge.edge_class);
+    // this->knowledge_graph_ptr_->get_out_edges(my_edge.source_node);
+    // this->knowledge_graph_ptr_->get_in_edges(my_edge.target_node);
   }
 }
 
@@ -161,10 +165,10 @@ void KnowledgeGraphServer::readGraph(
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadGraph::Response> response)
 {
   RCLCPP_INFO(this->get_logger(), "Access to the graph service");
-  if (KnowledgeGraphServer::getKnowledgeGraph()->get_node_names().empty()) {
+  if (knowledge_graph_ptr_->get_node_names().empty()) {
     RCLCPP_INFO(this->get_logger(), "the graph is empty");
   } else {
-    if (KnowledgeGraphServer::getKnowledgeGraph()->exist_node(request->node_name)) {
+    if (knowledge_graph_ptr_->exist_node(request->node_name)) {
       knowledge_graph_msgs::msg::Node node;
       node.node_name = request->node_name;
       response->nodes.emplace_back(node);
