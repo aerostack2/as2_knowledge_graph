@@ -161,7 +161,7 @@ protected:
     service_read_edge_property_graph_;
   size_t count_;
 
-  std::optional<knowledge_graph_msgs::msg::Node> get_node_from_class(
+  std::vector<knowledge_graph_msgs::msg::Node> get_nodes_from_class(
     const std::string node_class);
 
   void createNode(
