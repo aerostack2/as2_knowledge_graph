@@ -72,12 +72,6 @@ void KnowledgeGraphServer::createEdge(
   if (this->knowledge_graph_ptr_->update_edge(my_edge, 1) == true) {
     response->resultado = true;
     RCLCPP_INFO(this->get_logger(), "successfully update the edge");
-
-    // Esto creo que es inecesario
-    // this->knowledge_graph_ptr_->get_edges(my_edge.source_node, my_edge.target_node);
-    // this->knowledge_graph_ptr_->get_edges(my_edge.edge_class);
-    // this->knowledge_graph_ptr_->get_out_edges(my_edge.source_node);
-    // this->knowledge_graph_ptr_->get_in_edges(my_edge.target_node);
   }
 }
 
@@ -173,12 +167,7 @@ void KnowledgeGraphServer::readGraph(
     } else {
       RCLCPP_INFO(this->get_logger(), "Inside the graph there are the nodes:");
       for (auto & node_aux : knowledge_graph_ptr_->get_nodes()) {
-        // knowledge_graph_msgs::msg::Node node;
-        // node.node_name = node_names;
         response->nodes.emplace_back(node_aux);
-        // RCLCPP_INFO(
-        //   this->get_logger(), "%s %s",
-        //   node_aux.node_name.c_str(), node_aux.node_class.c_str());
       }
     }
   }
@@ -209,19 +198,19 @@ void KnowledgeGraphServer::readEdgeClassGraph(
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Request> request,
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Response> response)
 {
-  if (KnowledgeGraphServer::getKnowledgeGraph()->get_edges(
+  if (knowledge_graph_ptr_->get_edges(
       request->source_node,
       request->target_node).empty())
   {
     RCLCPP_INFO(this->get_logger(), "the edge does not exist");
   } else {
     for (auto & the_class:
-      KnowledgeGraphServer::getKnowledgeGraph()->get_edges(
+      knowledge_graph_ptr_->get_edges(
         request->source_node,
         request->target_node))
     {
       knowledge_graph_msgs::msg::Edge edge;
-      edge.edge_class = the_class.edge_class;
+      edge = the_class;
       response->edge.emplace_back(edge);
     }
   }
@@ -231,18 +220,17 @@ void KnowledgeGraphServer::readEdgeSourceTargetGraph(
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Request> request,
   const std::shared_ptr<as2_knowledge_graph_msgs::srv::ReadEdgeGraph::Response> response)
 {
-  if (KnowledgeGraphServer::getKnowledgeGraph()->get_edges(
+  if (knowledge_graph_ptr_->get_edges(
       request->edge_class).empty())
   {
     RCLCPP_INFO(this->get_logger(), "the edge class does not exist");
   } else {
     for (auto & the_class:
-      KnowledgeGraphServer::getKnowledgeGraph()->get_edges(
+      knowledge_graph_ptr_->get_edges(
         request->edge_class))
     {
       knowledge_graph_msgs::msg::Edge edge;
-      edge.source_node = the_class.source_node;
-      edge.target_node = the_class.target_node;
+      edge = the_class;
       response->edge.emplace_back(edge);
     }
   }
